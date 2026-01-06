@@ -76,7 +76,7 @@ export const Story = () => {
 
             {/* Carney's Images */}
             <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-              <img src="/TekoA.png" alt="Carney" className="rounded-2xl shadow-lg w-full h-48 object-cover border-4 border-coco-blue/20" />
+              <img src="/CarneyA.png" alt="Carney" className="rounded-2xl shadow-lg w-full h-48 object-cover border-4 border-coco-blue/20" />
               <div className="rounded-2xl shadow-lg w-full h-48 bg-gradient-to-br from-coco-blue/10 to-medical-purple/10 flex items-center justify-center border-4 border-dashed border-gray-300">
                 <p className="text-gray-500 font-bold text-center px-4">More memories<br/>to be made ❤️</p>
               </div>

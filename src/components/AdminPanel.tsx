@@ -24,6 +24,11 @@ export const AdminPanel = () => {
 
   const ADMIN_PASSWORD = import.meta.env.VITE_ADMIN_PASSWORD;
 
+  // Validate admin password is configured
+  if (!ADMIN_PASSWORD) {
+    console.error('VITE_ADMIN_PASSWORD environment variable is not configured');
+  }
+
   useEffect(() => {
     if (isAuthenticated) {
       fetchMchangaAmount();
@@ -31,9 +36,7 @@ export const AdminPanel = () => {
     }
   }, [isAuthenticated]);
 
-  const fetchDonors = async () => {
-    console.log('Fetching donors...');
-    
+  const fetchDonors = async () => {    
     // Fetch unverified donations
     const { data: unverified, error: unverifiedError } = await supabase
       .from('donors')
@@ -46,9 +49,6 @@ export const AdminPanel = () => {
       .select('*')
       .eq('is_verified', true)
       .limit(10);
-
-    console.log('Unverified donors:', unverified);
-    console.log('Verified donors:', verified);
     
     if (unverifiedError) console.error('Error fetching unverified:', unverifiedError);
     if (verifiedError) console.error('Error fetching verified:', verifiedError);
@@ -71,6 +71,10 @@ export const AdminPanel = () => {
 
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
+    if (!ADMIN_PASSWORD) {
+      setMessage('Admin password not configured. Check environment variables.');
+      return;
+    }
     if (password === ADMIN_PASSWORD) {
       setIsAuthenticated(true);
       setMessage('');

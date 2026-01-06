@@ -52,8 +52,8 @@ export const Hero = () => {
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-4">
               <img 
-                src="/CaryerC.png" 
-                alt="Caryer" 
+                src="/CarneyA.png" 
+                alt="Carney" 
                 className="rounded-3xl shadow-xl w-full h-64 object-cover border-4 border-coco-green"
               />
               <img 
