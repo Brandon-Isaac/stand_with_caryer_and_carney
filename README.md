@@ -1,4 +1,4 @@
-### CARYER AND CARNEY WELL FUND
+### CARYER AND CARNEY
 
 ## Overview
 
