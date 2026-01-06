@@ -5,7 +5,7 @@ interface StatsProps {
 }
 
 export const Stats = ({ currentAmount }: StatsProps) => {
-  const GOAL = 5000000;
+  const GOAL = 12000000; // Caryer: 5M + Carney: 7M
   const percentage = Math.min((currentAmount / GOAL) * 100, 100);
 
   return (
@@ -20,7 +20,7 @@ export const Stats = ({ currentAmount }: StatsProps) => {
           </div>
           <div className="text-right">
             <p className="text-gray-500 font-bold uppercase tracking-wider text-sm">Target</p>
-            <p className="text-2xl font-bold text-gray-400">KES 5.0M</p>
+            <p className="text-2xl font-bold text-gray-400">KES 12.0M</p>
           </div>
         </div>
 
@@ -43,7 +43,7 @@ export const Stats = ({ currentAmount }: StatsProps) => {
           </div>
           <div className="text-center p-4 rounded-2xl bg-coco-melon/10">
             <p className="text-coco-melon font-black text-2xl">March 2026</p>
-            <p className="text-gray-600 text-sm font-medium">BMT Deadline</p>
+            <p className="text-gray-600 text-sm font-medium">Both BMTs Deadline</p>
           </div>
           <div className="text-center p-4 rounded-2xl bg-medical-purple/10">
             <p className="text-medical-purple font-black text-2xl">India</p>

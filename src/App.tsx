@@ -1,34 +1,58 @@
+import { useState, useEffect } from 'react';
 import { Hero } from './components/Hero';
 import { Stats } from './components/Stats';
+import { Story } from './components/Story';
 import { DonorWall } from './components/DonorWall';
 import { Marquee } from './components/Marquee';
+import { DonationForm } from './components/DonationForm';
+import { AdminPanel } from './components/AdminPanel';
+import { supabase } from './lib/supabase';
 
 function App() {
-  // Mock data for now - replace with Supabase fetch tomorrow
-  const mockDonors = [
-    { id: '1', name: 'John Doe' },
-    { id: '2', name: 'Mary Wambui' },
-    { id: '3', name: 'Kevins Omondi' }
-  ];
-//   const fetchTotalRaised = async () => {
-//   const { data, error } = await supabase
-//     .from('donors')
-//     .select('amount')
-//     .eq('is_verified', true);
+  const [totalRaised, setTotalRaised] = useState(0);
+  const [donors, setDonors] = useState<Array<{ id: string; name: string }>>([]);
 
-//   if (error) return 0;
-//   return data.reduce((sum, donor) => sum + Number(donor.amount), 0);
-// };
+  useEffect(() => {
+    fetchDonationData();
+  }, []);
+
+  const fetchDonationData = async () => {
+    // Fetch verified donations
+    const { data: donorsData, error: donorsError } = await supabase
+      .from('donors')
+      .select('id, name, amount')
+      .eq('is_verified', true);
+
+    if (!donorsError && donorsData) {
+      setDonors(donorsData.map(d => ({ id: d.id, name: d.name })));
+      const directDonations = donorsData.reduce((sum, donor) => sum + Number(donor.amount), 0);
+      
+      // Fetch M-Changa amount from settings table
+      const { data: settingsData } = await supabase
+        .from('campaign_settings')
+        .select('value')
+        .eq('key', 'mchanga_amount')
+        .single();
+
+      const mchangaAmount = settingsData?.value ? Number(settingsData.value) : 0;
+      setTotalRaised(directDonations + mchangaAmount);
+    }
+  };
 
   return (
     <div className="min-h-screen bg-white pb-20"> {/* pb-20 prevents marquee overlap */}
       <Hero />
-      <Stats currentAmount={1250000} />
-      <DonorWall donors={mockDonors} />
+      <Stats currentAmount={totalRaised} />
+      <Story />
+      <div id="donation-form">
+        <DonationForm />
+      </div>
+      <DonorWall donors={donors} />
       
       {/* Rest of your sections (Blog, Transparency Docs) */}
       
       <Marquee />
+      <AdminPanel />
     </div>
   );
 }
