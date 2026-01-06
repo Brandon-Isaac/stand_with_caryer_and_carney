@@ -1,6 +1,14 @@
 import { Heart } from 'lucide-react';
 
 export const Hero = () => {
+  const scrollToDonationForm = () => {
+    document.getElementById('donation-form')?.scrollIntoView({ behavior: 'smooth' });
+  };
+
+  const scrollToStory = () => {
+    document.getElementById('story')?.scrollIntoView({ behavior: 'smooth' });
+  };
+
   return (
     <section className="relative bg-white pt-16 pb-8 px-6 overflow-hidden">
       <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
@@ -14,19 +22,26 @@ export const Hero = () => {
             URGENT MEDICAL APPEAL
           </div>
           <h1 className="text-5xl lg:text-6xl font-black text-gray-900 leading-tight mb-6">
-            Stand with <span className="text-medical-purple">Caryer</span> in his fight.
+            Stand with <span className="text-medical-purple">Caryer</span> & <span className="text-coco-blue">Carney</span> in their fight.
           </h1>
           <p className="text-lg text-gray-600 mb-8 leading-relaxed">
-            Our brave little hero, <strong>Caryer Kendric Geno Okwanyo</strong>, has been 
-            courageously battling sickle cell disease for 5 years. A fan of football 
-            and Cocomelon, he’s ready for his biggest match yet: a life-saving Bone 
-            Marrow Transplant (BMT) in India, scheduled for March 2026.
+            Our two brave little heroes are battling sickle cell disease. <strong>Caryer Kendric Geno Okwanyo</strong>, 
+            5 years old, was diagnosed at 10 months. His baby brother <strong>Carney Kian Teko Okwanyo</strong>, 
+            18 months old, was diagnosed at just 4 months. Both boys need life-saving Bone 
+            Marrow Transplants (BMT) in India, scheduled for March 2026. Caryer, a fan of toys
+            and Cars, and little Carney are ready for their biggest match yet.
           </p>
           <div className="flex flex-wrap gap-4">
-            <button className="bg-medical-purple text-white px-8 py-4 rounded-2xl font-bold text-lg hover:scale-105 transition-transform flex items-center gap-2">
+            <button 
+              onClick={scrollToDonationForm}
+              className="bg-medical-purple text-white px-8 py-4 rounded-2xl font-bold text-lg hover:scale-105 transition-transform flex items-center gap-2"
+            >
               Donate Now <Heart fill="white" size={20} />
             </button>
-            <button className="border-2 border-gray-200 text-gray-700 px-8 py-4 rounded-2xl font-bold text-lg hover:bg-gray-50 transition-colors">
+            <button 
+              onClick={scrollToStory}
+              className="border-2 border-gray-200 text-gray-700 px-8 py-4 rounded-2xl font-bold text-lg hover:bg-gray-50 transition-colors"
+            >
               Read Story
             </button>
           </div>
@@ -37,20 +52,20 @@ export const Hero = () => {
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-4">
               <img 
-                src="/football-1.jpg" 
-                alt="Caryer playing football" 
+                src="/CarneyA.png" 
+                alt="Carney" 
                 className="rounded-3xl shadow-xl w-full h-64 object-cover border-4 border-coco-green"
               />
               <img 
-                src="/cocomelon-art.jpg" 
-                alt="Cocomelon theme" 
+                src="/CaryerD.png" 
+                alt="Caryer" 
                 className="rounded-3xl shadow-xl w-full h-40 object-cover"
               />
             </div>
             <div className="pt-8">
               <img 
-                src="/football-2.jpg" 
-                alt="Caryer posing with ball" 
+                src="/CaryerA.png" 
+                alt="Caryer" 
                 className="rounded-3xl shadow-xl w-full h-80 object-cover border-4 border-coco-blue"
               />
             </div>
