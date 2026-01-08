@@ -1,10 +1,6 @@
 import { Heart } from 'lucide-react';
 
 export const Hero = () => {
-  const scrollToDonationForm = () => {
-    document.getElementById('donation-form')?.scrollIntoView({ behavior: 'smooth' });
-  };
-
   const scrollToStory = () => {
     document.getElementById('story')?.scrollIntoView({ behavior: 'smooth' });
   };
@@ -33,7 +29,7 @@ export const Hero = () => {
           </p>
           <div className="flex flex-wrap gap-4">
             <button 
-              onClick={scrollToDonationForm}
+              onClick={scrollToStory}
               className="bg-medical-purple text-white px-8 py-4 rounded-2xl font-bold text-lg hover:scale-105 transition-transform flex items-center gap-2"
             >
               Donate Now <Heart fill="white" size={20} />
@@ -42,7 +38,7 @@ export const Hero = () => {
               onClick={scrollToStory}
               className="border-2 border-gray-200 text-gray-700 px-8 py-4 rounded-2xl font-bold text-lg hover:bg-gray-50 transition-colors"
             >
-              Read Story
+              Read Their Stories
             </button>
           </div>
         </div>

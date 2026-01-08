@@ -3,7 +3,7 @@ import { supabase } from '../lib/supabase';
 import { CheckCircle2, Send, Smartphone, Building2, Link2 } from 'lucide-react';
 
 export const CaryerDonationForm = () => {
-  const [form, setForm] = useState({ name: '', amount: '', code: '' });
+  const [amount, setAmount] = useState('');
   const [submitted, setSubmitted] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -14,15 +14,13 @@ export const CaryerDonationForm = () => {
     setError(null);
     
     try {
-      // Insert as unverified so the Dad can check it against his M-Pesa SMS
+      // Submit donation amount for admin verification
       const { error: supabaseError } = await supabase
-        .from('donors')
+        .from('donations')
         .insert([{ 
-          name: form.name.toUpperCase(), 
-          amount: parseFloat(form.amount), 
-          mpesa_code: form.code.toUpperCase(),
-          is_verified: false,
-          child: 'caryer'
+          amount: parseFloat(amount),
+          child: 'caryer',
+          is_verified: false
         }]);
 
       if (supabaseError) {
@@ -30,6 +28,7 @@ export const CaryerDonationForm = () => {
         setError(supabaseError.message);
       } else {
         setSubmitted(true);
+        setAmount('');
       }
     } catch (err) {
       console.error('Unexpected error:', err);
@@ -43,8 +42,8 @@ export const CaryerDonationForm = () => {
     return (
       <div className="bg-coco-green/20 p-8 rounded-3xl text-center border-2 border-coco-green animate-in fade-in zoom-in duration-300">
         <CheckCircle2 className="mx-auto text-coco-green mb-4" size={48} />
-        <h3 className="text-2xl font-black text-gray-900">ASANTE!</h3>
-        <p className="text-gray-600 font-medium">We've received your details. Once verified, your name will appear on the Wall of Hope.</p>
+        <h3 className="text-2xl font-black text-gray-900">ASANTE SANA!</h3>
+        <p className="text-gray-600 font-medium">Your donation has been recorded. Thank you for your generosity!</p>
       </div>
     );
   }
@@ -56,14 +55,14 @@ export const CaryerDonationForm = () => {
         <h3 className="text-2xl font-black text-center mb-6 uppercase text-medical-purple">Donate for Caryer</h3>
          <div className="grid md:grid-cols-1 gap-8 mb-8">
          {/* M-Changa */}
-          <div className="bg-gradient-to-br from-coco-green/10 to-coco-green/5 p-6 rounded-2xl border-2 border-coco-green/20 hover:border-coco-green transition">
+          <div className="bg-gradient-to-br from-[#475b06]/10 to-[#475b06]/5 p-6 rounded-2xl border-2 border-[#475b06]/20 hover:border-[#475b06] transition">
             <div className="flex items-center gap-3 mb-4">
-              <Link2 className="text-coco-green" size={28} />
+              <Link2 className="text-[#475b06]" size={28} />
               <h4 className="font-black text-lg text-gray-900">M-Changa</h4>
             </div>
             <div className="space-y-2 text-sm">
               <p className="text-gray-700">
-                <a href="https://www.mchanga.africa/fundraiser/129674" target="_blank" rel="noopener noreferrer" className="text-coco-green hover:underline font-bold break-all">
+                <a href="https://www.mchanga.africa/fundraiser/129674" target="_blank" rel="noopener noreferrer" className="text-[#475b06] hover:text-[#364408] hover:underline font-bold break-all transition-colors">
                   mchanga.africa/fundraiser/129674
                 </a>
               </p>
@@ -104,14 +103,8 @@ export const CaryerDonationForm = () => {
 
       {/* Donation Logging Form */}
       <div className="bg-white p-8 rounded-[2.5rem] shadow-2xl border-t-8 border-medical-purple">
-        <h4 className="text-2xl font-black text-center mb-2 uppercase italic text-gray-800">I Have Contributed via M-Pesa</h4>
-        <p className="text-center text-gray-500 text-sm mb-2 font-bold">Log your DIRECT M-Pesa donation details below</p>
-        <div className="bg-yellow-50 border-2 border-yellow-300 rounded-xl p-3 mb-6">
-          <p className="text-xs text-center text-yellow-800 font-bold">
-            Only for Safaricom (4813619) or NCBA (880100) donations. 
-            <br />M-Changa donors are automatically tracked - no need to submit here!
-          </p>
-        </div>
+        <h4 className="text-2xl font-black text-center mb-2 uppercase italic text-gray-800">Record Your Contribution</h4>
+        <p className="text-center text-gray-500 text-sm mb-6 font-bold">Help us track our progress by entering your donation amount</p>
         
         {error && (
           <div className="bg-red-50 border-2 border-red-300 rounded-xl p-4 mb-4 text-center">
@@ -121,38 +114,21 @@ export const CaryerDonationForm = () => {
         
         <form onSubmit={handleSubmit} className="space-y-4">
           <input 
-            type="text" 
-            placeholder="YOUR FULL NAME"
+            type="number" 
+            placeholder="AMOUNT (KES)"
             required
+            min="1"
             disabled={loading}
-            className="w-full p-4 rounded-xl bg-gray-50 border-2 border-transparent focus:border-medical-purple focus:bg-white outline-none transition uppercase font-bold disabled:opacity-50"
-            onChange={(e) => setForm({...form, name: e.target.value})}
+            value={amount}
+            className="w-full p-5 rounded-xl bg-gray-50 border-2 border-transparent focus:border-medical-purple focus:bg-white outline-none transition font-bold text-lg disabled:opacity-50"
+            onChange={(e) => setAmount(e.target.value)}
           />
-          <div className="grid grid-cols-2 gap-4">
-            <input 
-              type="number" 
-              placeholder="AMOUNT (KES)"
-              required
-              disabled={loading}
-              className="p-4 rounded-xl bg-gray-50 border-2 border-transparent focus:border-medical-purple focus:bg-white outline-none transition font-bold disabled:opacity-50"
-              onChange={(e) => setForm({...form, amount: e.target.value})}
-            />
-            <input 
-              type="text" 
-              placeholder="M-PESA CODE"
-              required
-              maxLength={10}
-              disabled={loading}
-              className="p-4 rounded-xl bg-gray-50 border-2 border-transparent focus:border-medical-purple focus:bg-white outline-none transition uppercase font-bold disabled:opacity-50"
-              onChange={(e) => setForm({...form, code: e.target.value})}
-            />
-          </div>
           <button 
             type="submit"
             disabled={loading}
             className="w-full bg-medical-purple text-white py-5 rounded-2xl font-black text-lg flex items-center justify-center gap-3 hover:shadow-lg active:scale-95 transition disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            {loading ? 'SUBMITTING...' : 'SUBMIT'} <Send size={20} />
+            {loading ? 'SUBMITTING...' : 'SUBMIT AMOUNT'} <Send size={20} />
           </button>
         </form>
       </div>

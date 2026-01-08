@@ -1,26 +1,28 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '../lib/supabase';
-import { Lock, RefreshCw, CheckCircle, XCircle, Clock } from 'lucide-react';
+import { Lock, RefreshCw, CheckCircle, XCircle, Clock, Plus } from 'lucide-react';
 
-interface Donor {
+interface Donation {
   id: string;
-  name: string;
   amount: number;
-  mpesa_code: string;
+  child: 'caryer' | 'carney';
   is_verified: boolean;
   created_at?: string;
+  notes?: string;
 }
 
 export const AdminPanel = () => {
   const [password, setPassword] = useState('');
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [showLoginForm, setShowLoginForm] = useState(false);
-  const [activeTab, setActiveTab] = useState<'mchanga' | 'verify'>('verify');
+  const [activeTab, setActiveTab] = useState<'mchanga' | 'verify' | 'manual'>('verify');
   const [mchangaAmount, setMchangaAmount] = useState('');
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState('');
-  const [unverifiedDonors, setUnverifiedDonors] = useState<Donor[]>([]);
-  const [verifiedDonors, setVerifiedDonors] = useState<Donor[]>([]);
+  const [unverifiedDonations, setUnverifiedDonations] = useState<Donation[]>([]);
+  const [verifiedDonations, setVerifiedDonations] = useState<Donation[]>([]);
+  const [manualAmount, setManualAmount] = useState('');
+  const [manualChild, setManualChild] = useState<'caryer' | 'carney'>('caryer');
 
   const ADMIN_PASSWORD = import.meta.env.VITE_ADMIN_PASSWORD;
 
@@ -32,29 +34,31 @@ export const AdminPanel = () => {
   useEffect(() => {
     if (isAuthenticated) {
       fetchMchangaAmount();
-      fetchDonors();
+      fetchDonations();
     }
   }, [isAuthenticated]);
 
-  const fetchDonors = async () => {    
+  const fetchDonations = async () => {    
     // Fetch unverified donations
     const { data: unverified, error: unverifiedError } = await supabase
-      .from('donors')
+      .from('donations')
       .select('*')
-      .eq('is_verified', false);
+      .eq('is_verified', false)
+      .order('created_at', { ascending: false });
 
     // Fetch recent verified donations
     const { data: verified, error: verifiedError } = await supabase
-      .from('donors')
+      .from('donations')
       .select('*')
       .eq('is_verified', true)
+      .order('created_at', { ascending: false })
       .limit(10);
     
     if (unverifiedError) console.error('Error fetching unverified:', unverifiedError);
     if (verifiedError) console.error('Error fetching verified:', verifiedError);
 
-    if (unverified) setUnverifiedDonors(unverified);
-    if (verified) setVerifiedDonors(verified);
+    if (unverified) setUnverifiedDonations(unverified);
+    if (verified) setVerifiedDonations(verified);
   };
 
   const fetchMchangaAmount = async () => {
@@ -100,35 +104,58 @@ export const AdminPanel = () => {
     setLoading(false);
   };
 
-  const handleVerifyDonor = async (donorId: string) => {
+  const handleVerifyDonation = async (donationId: string) => {
     const { error } = await supabase
-      .from('donors')
+      .from('donations')
       .update({ is_verified: true })
-      .eq('id', donorId);
+      .eq('id', donationId);
 
     if (!error) {
-      setMessage('Donor verified successfully!');
-      fetchDonors(); // Refresh the list
+      setMessage('Donation verified successfully!');
+      fetchDonations(); // Refresh the list
     } else {
       setMessage(`Error: ${error.message}`);
     }
   };
 
-  const handleRejectDonor = async (donorId: string) => {
+  const handleRejectDonation = async (donationId: string) => {
     const confirmDelete = window.confirm('Are you sure you want to delete this donation entry?');
     if (!confirmDelete) return;
 
     const { error } = await supabase
-      .from('donors')
+      .from('donations')
       .delete()
-      .eq('id', donorId);
+      .eq('id', donationId);
 
     if (!error) {
       setMessage('Donation entry deleted.');
-      fetchDonors();
+      fetchDonations();
     } else {
       setMessage(`Error: ${error.message}`);
     }
+  };
+
+  const handleAddManualDonation = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+    setMessage('');
+
+    const { error } = await supabase
+      .from('donations')
+      .insert([{ 
+        amount: parseFloat(manualAmount),
+        child: manualChild,
+        is_verified: false
+      }]);
+
+    if (error) {
+      setMessage(`Error: ${error.message}`);
+    } else {
+      setMessage('Manual donation added successfully!');
+      setManualAmount('');
+      fetchDonations();
+    }
+    setLoading(false);
   };
 
   if (!isAuthenticated) {
@@ -190,7 +217,18 @@ export const AdminPanel = () => {
           }`}
         >
           <Clock className="inline mr-2" size={16} />
-          Verify Donations ({unverifiedDonors.length})
+          Verify ({unverifiedDonations.length})
+        </button>
+        <button
+          onClick={() => setActiveTab('manual')}
+          className={`flex-1 py-3 px-4 font-bold text-sm transition ${
+            activeTab === 'manual'
+              ? 'bg-medical-purple text-white'
+              : 'bg-gray-50 text-gray-600 hover:bg-gray-100'
+          }`}
+        >
+          <Plus className="inline mr-2" size={16} />
+          Add Entry
         </button>
         <button
           onClick={() => setActiveTab('mchanga')}
@@ -212,48 +250,47 @@ export const AdminPanel = () => {
             <div className="flex justify-between items-center">
               <h4 className="font-bold text-gray-700 text-sm uppercase">Pending Verification</h4>
               <button
-                onClick={fetchDonors}
+                onClick={fetchDonations}
                 className="bg-gray-100 hover:bg-gray-200 text-gray-700 px-3 py-1 rounded-lg font-bold text-xs flex items-center gap-1"
               >
                 <RefreshCw size={14} />
                 Refresh
               </button>
             </div>
-            {unverifiedDonors.length === 0 ? (
+            {unverifiedDonations.length === 0 ? (
               <div className="text-center py-8">
                 <p className="text-gray-500 text-sm mb-2">No pending donations</p>
                 <p className="text-xs text-gray-400">Check browser console (F12) for any errors</p>
               </div>
             ) : (
               <div className="space-y-3">
-                {unverifiedDonors.map((donor) => (
-                  <div key={donor.id} className="bg-yellow-50 border-2 border-yellow-200 rounded-xl p-4">
+                {unverifiedDonations.map((donation) => (
+                  <div key={donation.id} className="bg-yellow-50 border-2 border-yellow-200 rounded-xl p-4">
                     <div className="flex justify-between items-start mb-3">
                       <div className="flex-1">
-                        <p className="font-black text-gray-900">{donor.name}</p>
-                        <p className="text-sm text-gray-600">
-                          Amount: <span className="font-bold text-gray-900">KES {donor.amount.toLocaleString()}</span>
+                        <p className="text-sm text-gray-600 mb-1">
+                          <span className="font-black text-gray-900 text-lg">KES {donation.amount.toLocaleString()}</span>
                         </p>
                         <p className="text-sm text-gray-600">
-                          M-Pesa Code: <span className="font-bold text-gray-900">{donor.mpesa_code}</span>
+                          For: <span className="font-bold text-gray-900 uppercase">{donation.child}</span>
                         </p>
-                        {donor.created_at && (
+                        {donation.created_at && (
                           <p className="text-xs text-gray-500 mt-1">
-                            {new Date(donor.created_at).toLocaleString()}
+                            {new Date(donation.created_at).toLocaleString()}
                           </p>
                         )}
                       </div>
                     </div>
                     <div className="flex gap-2">
                       <button
-                        onClick={() => handleVerifyDonor(donor.id)}
+                        onClick={() => handleVerifyDonation(donation.id)}
                         className="flex-1 bg-green-500 text-white py-2 px-3 rounded-lg font-bold text-sm hover:bg-green-600 flex items-center justify-center gap-2"
                       >
                         <CheckCircle size={16} />
                         Verify
                       </button>
                       <button
-                        onClick={() => handleRejectDonor(donor.id)}
+                        onClick={() => handleRejectDonation(donation.id)}
                         className="flex-1 bg-red-500 text-white py-2 px-3 rounded-lg font-bold text-sm hover:bg-red-600 flex items-center justify-center gap-2"
                       >
                         <XCircle size={16} />
@@ -266,16 +303,16 @@ export const AdminPanel = () => {
             )}
 
             <h4 className="font-bold text-gray-700 text-sm uppercase mt-6">Recent Verified</h4>
-            {verifiedDonors.length === 0 ? (
+            {verifiedDonations.length === 0 ? (
               <p className="text-gray-500 text-sm text-center py-4">No verified donations yet</p>
             ) : (
               <div className="space-y-2">
-                {verifiedDonors.map((donor) => (
-                  <div key={donor.id} className="bg-green-50 border border-green-200 rounded-lg p-3">
+                {verifiedDonations.map((donation) => (
+                  <div key={donation.id} className="bg-green-50 border border-green-200 rounded-lg p-3">
                     <div className="flex justify-between items-center">
                       <div>
-                        <p className="font-bold text-gray-900 text-sm">{donor.name}</p>
-                        <p className="text-xs text-gray-600">KES {donor.amount.toLocaleString()} • {donor.mpesa_code}</p>
+                        <p className="font-bold text-gray-900 text-sm">KES {donation.amount.toLocaleString()}</p>
+                        <p className="text-xs text-gray-600">For: {donation.child.toUpperCase()}</p>
                       </div>
                       <CheckCircle className="text-green-500" size={20} />
                     </div>
@@ -284,6 +321,55 @@ export const AdminPanel = () => {
               </div>
             )}
           </div>
+        )}
+
+        {/* Manual Entry Tab */}
+        {activeTab === 'manual' && (
+          <form onSubmit={handleAddManualDonation} className="space-y-4">
+            <div className="bg-blue-50 border-2 border-blue-200 rounded-xl p-4">
+              <p className="text-sm text-blue-800 font-bold">
+                Use this when someone donated but forgot to record it in the app.
+              </p>
+            </div>
+            
+            <div>
+              <label className="text-sm font-bold text-gray-700">Amount (KES)</label>
+              <input
+                type="number"
+                placeholder="Enter amount"
+                value={manualAmount}
+                onChange={(e) => setManualAmount(e.target.value)}
+                className="w-full p-3 border-2 border-gray-200 rounded-lg mt-1 font-bold"
+                required
+                min="1"
+              />
+            </div>
+
+            <div>
+              <label className="text-sm font-bold text-gray-700">For Child</label>
+              <select
+                value={manualChild}
+                onChange={(e) => setManualChild(e.target.value as 'caryer' | 'carney')}
+                className="w-full p-3 border-2 border-gray-200 rounded-lg mt-1 font-bold"
+              >
+                <option value="caryer">CARYER</option>
+                <option value="carney">CARNEY</option>
+              </select>
+            </div>
+            
+            <button
+              type="submit"
+              disabled={loading}
+              className="w-full bg-medical-purple text-white py-3 rounded-lg font-bold flex items-center justify-center gap-2 hover:shadow-lg disabled:opacity-50"
+            >
+              <Plus size={16} />
+              {loading ? 'Adding...' : 'Add Donation Entry'}
+            </button>
+
+            <p className="text-xs text-gray-500">
+              This will create an unverified donation entry that you can then verify in the Verify tab.
+            </p>
+          </form>
         )}
 
         {/* M-Changa Tab */}
