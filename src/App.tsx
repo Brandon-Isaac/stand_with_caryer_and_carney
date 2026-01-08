@@ -9,7 +9,6 @@ import { supabase } from './lib/supabase';
 
 function App() {
   const [totalRaised, setTotalRaised] = useState(0);
-  const [statusUpdates, setStatusUpdates] = useState<Array<{ id: string; message: string; child: 'caryer' | 'carney' | 'both'; created_at: string }>>([]);
 
   useEffect(() => {
     fetchDonationData();
@@ -35,17 +34,6 @@ function App() {
       const mchangaAmount = settingsData?.value ? Number(settingsData.value) : 0;
       setTotalRaised(directDonations + mchangaAmount);
     }
-
-    // Fetch health status updates
-    const { data: statusData, error: statusError } = await supabase
-      .from('status_updates')
-      .select('*')
-      .order('created_at', { ascending: false })
-      .limit(20);
-
-    if (!statusError && statusData) {
-      setStatusUpdates(statusData);
-    }
   };
 
   return (
@@ -53,7 +41,7 @@ function App() {
       <Hero />
       <Stats currentAmount={totalRaised} />
       <Story />
-      <StatusWall statusUpdates={statusUpdates} />
+      <StatusWall />
       
       {/* Rest of your sections (Blog, Transparency Docs) */}
       

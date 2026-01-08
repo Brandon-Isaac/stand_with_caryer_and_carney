@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '../lib/supabase';
-import { Lock, RefreshCw, CheckCircle, XCircle, Clock, Plus } from 'lucide-react';
+import { Lock, RefreshCw, CheckCircle, XCircle, Clock, Plus, FileText } from 'lucide-react';
 
 interface Donation {
   id: string;
@@ -11,11 +11,20 @@ interface Donation {
   notes?: string;
 }
 
+interface HealthUpdate {
+  id: string;
+  child: 'caryer' | 'carney';
+  title: string;
+  description: string;
+  date: string;
+  created_at?: string;
+}
+
 export const AdminPanel = () => {
   const [password, setPassword] = useState('');
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [showLoginForm, setShowLoginForm] = useState(false);
-  const [activeTab, setActiveTab] = useState<'mchanga' | 'verify' | 'manual'>('verify');
+  const [activeTab, setActiveTab] = useState<'mchanga' | 'verify' | 'manual' | 'health'>('verify');
   const [mchangaAmount, setMchangaAmount] = useState('');
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState('');
@@ -23,6 +32,11 @@ export const AdminPanel = () => {
   const [verifiedDonations, setVerifiedDonations] = useState<Donation[]>([]);
   const [manualAmount, setManualAmount] = useState('');
   const [manualChild, setManualChild] = useState<'caryer' | 'carney'>('caryer');
+  const [healthUpdates, setHealthUpdates] = useState<HealthUpdate[]>([]);
+  const [healthChild, setHealthChild] = useState<'caryer' | 'carney'>('caryer');
+  const [healthTitle, setHealthTitle] = useState('');
+  const [healthDescription, setHealthDescription] = useState('');
+  const [healthDate, setHealthDate] = useState(new Date().toISOString().split('T')[0]);
 
   const ADMIN_PASSWORD = import.meta.env.VITE_ADMIN_PASSWORD;
 
@@ -35,6 +49,7 @@ export const AdminPanel = () => {
     if (isAuthenticated) {
       fetchMchangaAmount();
       fetchDonations();
+      fetchHealthUpdates();
     }
   }, [isAuthenticated]);
 
@@ -59,6 +74,19 @@ export const AdminPanel = () => {
 
     if (unverified) setUnverifiedDonations(unverified);
     if (verified) setVerifiedDonations(verified);
+  };
+
+  const fetchHealthUpdates = async () => {
+    const { data, error } = await supabase
+      .from('health_updates')
+      .select('*')
+      .order('date', { ascending: false });
+    
+    if (error) {
+      console.error('Error fetching health updates:', error);
+    } else if (data) {
+      setHealthUpdates(data);
+    }
   };
 
   const fetchMchangaAmount = async () => {
@@ -158,6 +186,49 @@ export const AdminPanel = () => {
     setLoading(false);
   };
 
+  const handleAddHealthUpdate = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+    setMessage('');
+
+    const { error } = await supabase
+      .from('health_updates')
+      .insert([{ 
+        child: healthChild,
+        title: healthTitle,
+        description: healthDescription,
+        date: healthDate
+      }]);
+
+    if (error) {
+      setMessage(`Error: ${error.message}`);
+    } else {
+      setMessage('Health update added successfully!');
+      setHealthTitle('');
+      setHealthDescription('');
+      setHealthDate(new Date().toISOString().split('T')[0]);
+      fetchHealthUpdates();
+    }
+    setLoading(false);
+  };
+
+  const handleDeleteHealthUpdate = async (updateId: string) => {
+    const confirmDelete = window.confirm('Are you sure you want to delete this health update?');
+    if (!confirmDelete) return;
+
+    const { error } = await supabase
+      .from('health_updates')
+      .delete()
+      .eq('id', updateId);
+
+    if (!error) {
+      setMessage('Health update deleted.');
+      fetchHealthUpdates();
+    } else {
+      setMessage(`Error: ${error.message}`);
+    }
+  };
+
   if (!isAuthenticated) {
     return (
       <div className="fixed bottom-4 right-4 z-50">
@@ -218,6 +289,17 @@ export const AdminPanel = () => {
         >
           <Clock className="inline mr-2" size={16} />
           Verify ({unverifiedDonations.length})
+        </button>
+        <button
+          onClick={() => setActiveTab('health')}
+          className={`flex-1 py-3 px-4 font-bold text-sm transition ${
+            activeTab === 'health'
+              ? 'bg-medical-purple text-white'
+              : 'bg-gray-50 text-gray-600 hover:bg-gray-100'
+          }`}
+        >
+          <FileText className="inline mr-2" size={16} />
+          Health Updates
         </button>
         <button
           onClick={() => setActiveTab('manual')}
@@ -370,6 +452,117 @@ export const AdminPanel = () => {
               This will create an unverified donation entry that you can then verify in the Verify tab.
             </p>
           </form>
+        )}
+
+        {/* Health Updates Tab */}
+        {activeTab === 'health' && (
+          <div className="space-y-4">
+            <form onSubmit={handleAddHealthUpdate} className="space-y-4 mb-6 pb-6 border-b-2 border-gray-200">
+              <h4 className="font-bold text-gray-700 text-sm uppercase">Add Health Update</h4>
+              
+              <div>
+                <label className="text-sm font-bold text-gray-700">For Child</label>
+                <select
+                  value={healthChild}
+                  onChange={(e) => setHealthChild(e.target.value as 'caryer' | 'carney')}
+                  className="w-full p-3 border-2 border-gray-200 rounded-lg mt-1 font-bold"
+                >
+                  <option value="caryer">CARYER</option>
+                  <option value="carney">CARNEY</option>
+                </select>
+              </div>
+
+              <div>
+                <label className="text-sm font-bold text-gray-700">Update Date</label>
+                <input
+                  type="date"
+                  value={healthDate}
+                  onChange={(e) => setHealthDate(e.target.value)}
+                  className="w-full p-3 border-2 border-gray-200 rounded-lg mt-1 font-bold"
+                  required
+                />
+              </div>
+
+              <div>
+                <label className="text-sm font-bold text-gray-700">Title</label>
+                <input
+                  type="text"
+                  placeholder="e.g., Surgery completed successfully"
+                  value={healthTitle}
+                  onChange={(e) => setHealthTitle(e.target.value)}
+                  className="w-full p-3 border-2 border-gray-200 rounded-lg mt-1 font-bold"
+                  required
+                />
+              </div>
+
+              <div>
+                <label className="text-sm font-bold text-gray-700">Description</label>
+                <textarea
+                  placeholder="Provide details about the health update..."
+                  value={healthDescription}
+                  onChange={(e) => setHealthDescription(e.target.value)}
+                  className="w-full p-3 border-2 border-gray-200 rounded-lg mt-1 font-bold min-h-[100px]"
+                  required
+                />
+              </div>
+              
+              <button
+                type="submit"
+                disabled={loading}
+                className="w-full bg-medical-purple text-white py-3 rounded-lg font-bold flex items-center justify-center gap-2 hover:shadow-lg disabled:opacity-50"
+              >
+                <Plus size={16} />
+                {loading ? 'Adding...' : 'Add Health Update'}
+              </button>
+            </form>
+
+            <div>
+              <div className="flex justify-between items-center mb-3">
+                <h4 className="font-bold text-gray-700 text-sm uppercase">All Health Updates</h4>
+                <button
+                  onClick={fetchHealthUpdates}
+                  className="bg-gray-100 hover:bg-gray-200 text-gray-700 px-3 py-1 rounded-lg font-bold text-xs flex items-center gap-1"
+                >
+                  <RefreshCw size={14} />
+                  Refresh
+                </button>
+              </div>
+              
+              {healthUpdates.length === 0 ? (
+                <p className="text-gray-500 text-sm text-center py-8">No health updates yet</p>
+              ) : (
+                <div className="space-y-3">
+                  {healthUpdates.map((update) => (
+                    <div key={update.id} className="bg-blue-50 border-2 border-blue-200 rounded-xl p-4">
+                      <div className="flex justify-between items-start mb-2">
+                        <div className="flex-1">
+                          <p className="text-xs text-blue-600 font-bold uppercase mb-1">{update.child}</p>
+                          <p className="font-bold text-gray-900 text-base mb-1">{update.title}</p>
+                          <p className="text-sm text-gray-600">{update.description}</p>
+                        </div>
+                      </div>
+                      <div className="flex justify-between items-center mt-3 pt-3 border-t border-blue-200">
+                        <p className="text-xs text-gray-500">
+                          {new Date(update.date).toLocaleDateString('en-US', {
+                            year: 'numeric',
+                            month: 'long',
+                            day: 'numeric'
+                          })}
+                        </p>
+                        <button
+                          onClick={() => handleDeleteHealthUpdate(update.id)}
+                          className="bg-red-500 text-white py-1 px-3 rounded-lg font-bold text-xs hover:bg-red-600 flex items-center gap-1"
+                        >
+                          <XCircle size={14} />
+                          Delete
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
         )}
 
         {/* M-Changa Tab */}

@@ -1,19 +1,41 @@
+import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Activity } from 'lucide-react';
+import { supabase } from '../lib/supabase';
 
-interface StatusUpdate {
+interface HealthUpdate {
   id: string;
-  message: string;
-  child: 'caryer' | 'carney' | 'both';
-  created_at: string;
+  child: 'caryer' | 'carney';
+  title: string;
+  description: string;
+  date: string;
+  created_at?: string;
 }
 
-interface StatusWallProps {
-  statusUpdates: StatusUpdate[];
-}
+export const StatusWall = () => {
+  const [healthUpdates, setHealthUpdates] = useState<HealthUpdate[]>([]);
 
-export const StatusWall = ({ statusUpdates }: StatusWallProps) => {
-  const displayUpdates = statusUpdates;
+  useEffect(() => {
+    fetchHealthUpdates();
+    
+    // Refresh every 2 minutes
+    const interval = setInterval(fetchHealthUpdates, 2 * 60 * 1000);
+    return () => clearInterval(interval);
+  }, []);
+
+  const fetchHealthUpdates = async () => {
+    const { data, error } = await supabase
+      .from('health_updates')
+      .select('*')
+      .order('date', { ascending: false })
+      .limit(10);
+    
+    if (!error && data) {
+      setHealthUpdates(data);
+    }
+  };
+
+  const displayUpdates = healthUpdates;
 
   const getChildName = (child: string) => {
     switch (child) {
@@ -21,6 +43,14 @@ export const StatusWall = ({ statusUpdates }: StatusWallProps) => {
       case 'carney': return 'Carney';
       default: return 'Both';
     }
+  };
+
+  const formatDate = (dateString: string) => {
+    return new Date(dateString).toLocaleDateString('en-US', { 
+      month: 'short', 
+      day: 'numeric',
+      year: 'numeric'
+    });
   };
 
   return (
@@ -53,14 +83,22 @@ export const StatusWall = ({ statusUpdates }: StatusWallProps) => {
             displayUpdates.map((update, idx) => (
               <div 
                 key={`${update.id}-${idx}`}
-                className={`flex items-center gap-3 bg-white/10 px-6 py-4 rounded-2xl border border-white/20 shadow-lg`}
+                className={`flex items-center gap-3 bg-white/10 px-6 py-4 rounded-2xl border border-white/20 shadow-lg min-w-[400px]`}
               >
                 <div className="flex flex-col gap-1">
-                  <span className="text-white/70 font-bold text-xs uppercase">
-                    {getChildName(update.child)}
-                  </span>
+                  <div className="flex items-center gap-2 mb-1">
+                    <span className="text-white/70 font-bold text-xs uppercase">
+                      {getChildName(update.child)}
+                    </span>
+                    <span className="text-white/50 text-xs">
+                      • {formatDate(update.date)}
+                    </span>
+                  </div>
                   <span className="text-white font-black tracking-tight text-lg">
-                    {update.message}
+                    {update.title}
+                  </span>
+                  <span className="text-white/80 font-medium text-sm">
+                    {update.description}
                   </span>
                 </div>
               </div>
