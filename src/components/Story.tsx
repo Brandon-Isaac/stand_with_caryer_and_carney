@@ -1,4 +1,6 @@
 import { Heart } from 'lucide-react';
+import { CaryerDonationForm } from './CaryerDonationForm';
+import { CarneyDonationForm } from './CarneyDonationForm';
 
 export const Story = () => {
   return (
@@ -48,6 +50,9 @@ export const Story = () => {
               <img src="/CaryerF.png" alt="Caryer" className="rounded-2xl shadow-lg w-full h-48 object-cover border-4 border-coco-blue/20" />
             </div>
           </div>
+          
+          {/* Caryer's Donation Form */}
+          <CaryerDonationForm />
         </div>
 
         {/* Carney's Story */}
@@ -82,6 +87,9 @@ export const Story = () => {
               </div>
             </div>
           </div>
+          
+          {/* Carney's Donation Form */}
+          <CarneyDonationForm />
         </div>
 
         {/* Combined Mission */}

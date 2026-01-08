@@ -4,7 +4,6 @@ import { Stats } from './components/Stats';
 import { Story } from './components/Story';
 import { DonorWall } from './components/DonorWall';
 import { Marquee } from './components/Marquee';
-import { DonationForm } from './components/DonationForm';
 import { AdminPanel } from './components/AdminPanel';
 import { supabase } from './lib/supabase';
 
@@ -44,9 +43,6 @@ function App() {
       <Hero />
       <Stats currentAmount={totalRaised} />
       <Story />
-      <div id="donation-form">
-        <DonationForm />
-      </div>
       <DonorWall donors={donors} />
       
       {/* Rest of your sections (Blog, Transparency Docs) */}
