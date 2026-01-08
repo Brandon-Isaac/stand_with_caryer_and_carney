@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { supabase } from '../lib/supabase';
-import { CheckCircle2, Send, Smartphone, Building2, Link2 } from 'lucide-react';
+import { CheckCircle2, Send, Smartphone, Building2, Link2, AlertTriangle } from 'lucide-react';
+import { checkRateLimit, recordAttempt } from '../lib/rateLimiter';
 
 export const CaryerDonationForm = () => {
   const [amount, setAmount] = useState('');
@@ -10,8 +11,16 @@ export const CaryerDonationForm = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setLoading(true);
     setError(null);
+    
+    // Check rate limit
+    const rateLimitCheck = checkRateLimit();
+    if (!rateLimitCheck.allowed) {
+      setError(`Too many donation submissions. Please wait ${rateLimitCheck.timeRemaining} minutes before trying again.`);
+      return;
+    }
+    
+    setLoading(true);
     
     try {
       // Submit donation amount for admin verification
@@ -27,6 +36,7 @@ export const CaryerDonationForm = () => {
         console.error('Supabase error:', supabaseError);
         setError(supabaseError.message);
       } else {
+        recordAttempt();
         setSubmitted(true);
         setAmount('');
       }

@@ -22,6 +22,7 @@ interface HealthUpdate {
 
 export const AdminPanel = () => {
   const [password, setPassword] = useState('');
+  const [email, setEmail] = useState('');
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [showLoginForm, setShowLoginForm] = useState(false);
   const [activeTab, setActiveTab] = useState<'mchanga' | 'verify' | 'manual' | 'health'>('verify');
@@ -38,12 +39,15 @@ export const AdminPanel = () => {
   const [healthDescription, setHealthDescription] = useState('');
   const [healthDate, setHealthDate] = useState(new Date().toISOString().split('T')[0]);
 
-  const ADMIN_PASSWORD = import.meta.env.VITE_ADMIN_PASSWORD;
+  // Check authentication status on mount
+  useEffect(() => {
+    checkAuthStatus();
+  }, []);
 
-  // Validate admin password is configured
-  if (!ADMIN_PASSWORD) {
-    console.error('VITE_ADMIN_PASSWORD environment variable is not configured');
-  }
+  const checkAuthStatus = async () => {
+    const { data: { session } } = await supabase.auth.getSession();
+    setIsAuthenticated(!!session);
+  };
 
   useEffect(() => {
     if (isAuthenticated) {
@@ -101,18 +105,36 @@ export const AdminPanel = () => {
     }
   };
 
-  const handleLogin = (e: React.FormEvent) => {
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!ADMIN_PASSWORD) {
-      setMessage('Admin password not configured. Check environment variables.');
-      return;
+    setLoading(true);
+    setMessage('');
+    
+    try {
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email,
+        password
+      });
+
+      if (error) {
+        setMessage('Invalid email or password');
+      } else if (data.session) {
+        setIsAuthenticated(true);
+        setShowLoginForm(false);
+        setEmail('');
+        setPassword('');
+      }
+    } catch (err) {
+      setMessage('Login failed. Please try again.');
+    } finally {
+      setLoading(false);
     }
-    if (password === ADMIN_PASSWORD) {
-      setIsAuthenticated(true);
-      setMessage('');
-    } else {
-      setMessage('Invalid password');
-    }
+  };
+
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
+    setIsAuthenticated(false);
+    setMessage('');
   };
 
   const handleUpdateMchanga = async (e: React.FormEvent) => {
@@ -240,22 +262,31 @@ export const AdminPanel = () => {
         </button>
         
         {showLoginForm && (
-          <div className="absolute bottom-16 right-0 bg-white p-4 rounded-2xl shadow-2xl border-2 border-gray-200 w-64">
+          <div className="absolute bottom-16 right-0 bg-white p-4 rounded-2xl shadow-2xl border-2 border-gray-200 w-80">
             <form onSubmit={handleLogin} className="space-y-3">
               <h3 className="font-bold text-sm">Admin Access</h3>
+              <input
+                type="email"
+                placeholder="Email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                className="w-full p-2 border-2 border-gray-200 rounded-lg text-sm"
+                required
+              />
               <input
                 type="password"
                 placeholder="Password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 className="w-full p-2 border-2 border-gray-200 rounded-lg text-sm"
-                autoFocus
+                required
               />
               <button
                 type="submit"
-                className="w-full bg-medical-purple text-white py-2 rounded-lg text-sm font-bold"
+                disabled={loading}
+                className="w-full bg-medical-purple text-white py-2 rounded-lg text-sm font-bold disabled:opacity-50"
               >
-                Login
+                {loading ? 'Logging in...' : 'Login'}
               </button>
               {message && <p className="text-red-500 text-xs">{message}</p>}
             </form>
@@ -270,10 +301,10 @@ export const AdminPanel = () => {
       <div className="flex justify-between items-center p-6 border-b-2 border-gray-100">
         <h3 className="font-black text-lg">Admin Panel</h3>
         <button
-          onClick={() => setIsAuthenticated(false)}
-          className="text-gray-400 hover:text-gray-600"
+          onClick={handleLogout}
+          className="text-gray-400 hover:text-gray-600 font-bold text-sm"
         >
-          ✕
+          Logout
         </button>
       </div>
 
