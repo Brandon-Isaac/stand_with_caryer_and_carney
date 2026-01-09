@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { supabase } from '../lib/supabase';
-import { CheckCircle2, Send, Smartphone, Building2, Link2, AlertTriangle } from 'lucide-react';
+import { CheckCircle2, Send, Smartphone, Building2, Link2} from 'lucide-react';
 import { checkRateLimit, recordAttempt } from '../lib/rateLimiter';
 
 export const CaryerDonationForm = () => {
