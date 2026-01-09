@@ -7,7 +7,6 @@ const AWARENESS_QUOTES = [
   "Hope is stronger than pain. Together we can make a difference.",
   "A Bone Marrow Transplant is a second chance at life for both brothers.",
   "Sickle Cell affects millions. Your support can change their story.",
-  "March 2026: The deadline to save Caryer & Carney.",
   "Small acts of kindness can save lives. Donate today.",
   "Raising awareness saves lives. Share their story.",
   "Join us in the fight against Sickle Cell Disease.",

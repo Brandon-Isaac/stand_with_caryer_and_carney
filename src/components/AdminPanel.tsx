@@ -22,10 +22,14 @@ interface HealthUpdate {
 
 export const AdminPanel = () => {
   const [password, setPassword] = useState('');
+  const [email, setEmail] = useState('');
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [showLoginForm, setShowLoginForm] = useState(false);
-  const [activeTab, setActiveTab] = useState<'mchanga' | 'verify' | 'manual' | 'health'>('verify');
-  const [mchangaAmount, setMchangaAmount] = useState('');
+  const [activeTab, setActiveTab] = useState<'accounts' | 'verify' | 'manual' | 'health'>('verify');
+  const [mchangaCaryerAmount, setMchangaCaryerAmount] = useState('');
+  const [mchangaCarneyAmount, setMchangaCarneyAmount] = useState('');
+  const [ncbaAmount, setNcbaAmount] = useState('');
+  const [mpesaAmount, setMpesaAmount] = useState('');
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState('');
   const [unverifiedDonations, setUnverifiedDonations] = useState<Donation[]>([]);
@@ -38,16 +42,19 @@ export const AdminPanel = () => {
   const [healthDescription, setHealthDescription] = useState('');
   const [healthDate, setHealthDate] = useState(new Date().toISOString().split('T')[0]);
 
-  const ADMIN_PASSWORD = import.meta.env.VITE_ADMIN_PASSWORD;
+  // Check authentication status on mount
+  useEffect(() => {
+    checkAuthStatus();
+  }, []);
 
-  // Validate admin password is configured
-  if (!ADMIN_PASSWORD) {
-    console.error('VITE_ADMIN_PASSWORD environment variable is not configured');
-  }
+  const checkAuthStatus = async () => {
+    const { data: { session } } = await supabase.auth.getSession();
+    setIsAuthenticated(!!session);
+  };
 
   useEffect(() => {
     if (isAuthenticated) {
-      fetchMchangaAmount();
+      fetchAccountAmounts();
       fetchDonations();
       fetchHealthUpdates();
     }
@@ -89,45 +96,75 @@ export const AdminPanel = () => {
     }
   };
 
-  const fetchMchangaAmount = async () => {
+  const fetchAccountAmounts = async () => {
+    // Fetch all account amounts
     const { data } = await supabase
       .from('campaign_settings')
-      .select('value')
-      .eq('key', 'mchanga_amount')
-      .single();
+      .select('key, value')
+      .in('key', ['mchanga_caryer', 'mchanga_carney', 'ncba_total', 'mpesa_total']);
 
     if (data) {
-      setMchangaAmount(data.value);
+      data.forEach((item) => {
+        if (item.key === 'mchanga_caryer') setMchangaCaryerAmount(item.value || '0');
+        if (item.key === 'mchanga_carney') setMchangaCarneyAmount(item.value || '0');
+        if (item.key === 'ncba_total') setNcbaAmount(item.value || '0');
+        if (item.key === 'mpesa_total') setMpesaAmount(item.value || '0');
+      });
     }
   };
 
-  const handleLogin = (e: React.FormEvent) => {
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!ADMIN_PASSWORD) {
-      setMessage('Admin password not configured. Check environment variables.');
-      return;
-    }
-    if (password === ADMIN_PASSWORD) {
-      setIsAuthenticated(true);
-      setMessage('');
-    } else {
-      setMessage('Invalid password');
+    setLoading(true);
+    setMessage('');
+    
+    try {
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email,
+        password
+      });
+
+      if (error) {
+        setMessage('Invalid email or password');
+      } else if (data.session) {
+        setIsAuthenticated(true);
+        setShowLoginForm(false);
+        setEmail('');
+        setPassword('');
+      }
+    } catch (err) {
+      setMessage('Login failed. Please try again.');
+    } finally {
+      setLoading(false);
     }
   };
 
-  const handleUpdateMchanga = async (e: React.FormEvent) => {
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
+    setIsAuthenticated(false);
+    setMessage('');
+  };
+
+  const handleUpdateAccounts = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     setMessage('');
 
+    const updates = [
+      { key: 'mchanga_caryer', value: mchangaCaryerAmount || '0' },
+      { key: 'mchanga_carney', value: mchangaCarneyAmount || '0' },
+      { key: 'ncba_total', value: ncbaAmount || '0' },
+      { key: 'mpesa_total', value: mpesaAmount || '0' }
+    ];
+
     const { error } = await supabase
       .from('campaign_settings')
-      .upsert({ key: 'mchanga_amount', value: mchangaAmount });
+      .upsert(updates);
 
     if (error) {
       setMessage(`Error: ${error.message}`);
     } else {
-      setMessage('M-Changa amount updated successfully!');
+      setMessage('Account balances updated successfully!');
     }
     setLoading(false);
   };
@@ -240,22 +277,31 @@ export const AdminPanel = () => {
         </button>
         
         {showLoginForm && (
-          <div className="absolute bottom-16 right-0 bg-white p-4 rounded-2xl shadow-2xl border-2 border-gray-200 w-64">
+          <div className="absolute bottom-16 right-0 bg-white p-4 rounded-2xl shadow-2xl border-2 border-gray-200 w-80">
             <form onSubmit={handleLogin} className="space-y-3">
               <h3 className="font-bold text-sm">Admin Access</h3>
+              <input
+                type="email"
+                placeholder="Email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                className="w-full p-2 border-2 border-gray-200 rounded-lg text-sm"
+                required
+              />
               <input
                 type="password"
                 placeholder="Password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 className="w-full p-2 border-2 border-gray-200 rounded-lg text-sm"
-                autoFocus
+                required
               />
               <button
                 type="submit"
-                className="w-full bg-medical-purple text-white py-2 rounded-lg text-sm font-bold"
+                disabled={loading}
+                className="w-full bg-medical-purple text-white py-2 rounded-lg text-sm font-bold disabled:opacity-50"
               >
-                Login
+                {loading ? 'Logging in...' : 'Login'}
               </button>
               {message && <p className="text-red-500 text-xs">{message}</p>}
             </form>
@@ -270,10 +316,10 @@ export const AdminPanel = () => {
       <div className="flex justify-between items-center p-6 border-b-2 border-gray-100">
         <h3 className="font-black text-lg">Admin Panel</h3>
         <button
-          onClick={() => setIsAuthenticated(false)}
-          className="text-gray-400 hover:text-gray-600"
+          onClick={handleLogout}
+          className="text-gray-400 hover:text-gray-600 font-bold text-sm"
         >
-          ✕
+          Logout
         </button>
       </div>
 
@@ -313,15 +359,15 @@ export const AdminPanel = () => {
           Add Entry
         </button>
         <button
-          onClick={() => setActiveTab('mchanga')}
+          onClick={() => setActiveTab('accounts')}
           className={`flex-1 py-3 px-4 font-bold text-sm transition ${
-            activeTab === 'mchanga'
+            activeTab === 'accounts'
               ? 'bg-medical-purple text-white'
               : 'bg-gray-50 text-gray-600 hover:bg-gray-100'
           }`}
         >
           <RefreshCw className="inline mr-2" size={16} />
-          M-Changa
+          Accounts
         </button>
       </div>
 
@@ -565,19 +611,73 @@ export const AdminPanel = () => {
           </div>
         )}
 
-        {/* M-Changa Tab */}
-        {activeTab === 'mchanga' && (
-          <form onSubmit={handleUpdateMchanga} className="space-y-3">
+        {/* Accounts Tab */}
+        {activeTab === 'accounts' && (
+          <form onSubmit={handleUpdateAccounts} className="space-y-4">
+            <div className="bg-blue-50 border-2 border-blue-200 rounded-xl p-4 mb-4">
+              <p className="text-sm text-blue-800 font-bold">
+                Enter the current balance in each account. The total will be automatically calculated and displayed.
+              </p>
+            </div>
+
             <div>
-              <label className="text-sm font-bold text-gray-700">M-Changa Amount (KES)</label>
+              <label className="text-sm font-bold text-gray-700">M-Changa - Caryer (KES)</label>
               <input
                 type="number"
-                placeholder="Enter M-Changa total"
-                value={mchangaAmount}
-                onChange={(e) => setMchangaAmount(e.target.value)}
+                placeholder="0"
+                value={mchangaCaryerAmount}
+                onChange={(e) => setMchangaCaryerAmount(e.target.value)}
                 className="w-full p-3 border-2 border-gray-200 rounded-lg mt-1 font-bold"
-                required
+                min="0"
               />
+            </div>
+
+            <div>
+              <label className="text-sm font-bold text-gray-700">M-Changa - Carney (KES)</label>
+              <input
+                type="number"
+                placeholder="0"
+                value={mchangaCarneyAmount}
+                onChange={(e) => setMchangaCarneyAmount(e.target.value)}
+                className="w-full p-3 border-2 border-gray-200 rounded-lg mt-1 font-bold"
+                min="0"
+              />
+            </div>
+
+            <div>
+              <label className="text-sm font-bold text-gray-700">NCBA Bank Total (KES)</label>
+              <input
+                type="number"
+                placeholder="0"
+                value={ncbaAmount}
+                onChange={(e) => setNcbaAmount(e.target.value)}
+                className="w-full p-3 border-2 border-gray-200 rounded-lg mt-1 font-bold"
+                min="0"
+              />
+            </div>
+
+            <div>
+              <label className="text-sm font-bold text-gray-700">M-Pesa Paybill Total (KES)</label>
+              <input
+                type="number"
+                placeholder="0"
+                value={mpesaAmount}
+                onChange={(e) => setMpesaAmount(e.target.value)}
+                className="w-full p-3 border-2 border-gray-200 rounded-lg mt-1 font-bold"
+                min="0"
+              />
+            </div>
+
+            <div className="bg-gray-50 border-2 border-gray-200 rounded-xl p-4">
+              <p className="text-sm font-bold text-gray-600">Total (All Accounts)</p>
+              <p className="text-2xl font-black text-gray-900">
+                KES {(
+                  (parseFloat(mchangaCaryerAmount) || 0) +
+                  (parseFloat(mchangaCarneyAmount) || 0) +
+                  (parseFloat(ncbaAmount) || 0) +
+                  (parseFloat(mpesaAmount) || 0)
+                ).toLocaleString()}
+              </p>
             </div>
             
             <button
@@ -586,11 +686,11 @@ export const AdminPanel = () => {
               className="w-full bg-medical-purple text-white py-3 rounded-lg font-bold flex items-center justify-center gap-2 hover:shadow-lg disabled:opacity-50"
             >
               <RefreshCw size={16} className={loading ? 'animate-spin' : ''} />
-              {loading ? 'Updating...' : 'Update Amount'}
+              {loading ? 'Updating...' : 'Update Account Balances'}
             </button>
 
             <p className="text-xs text-gray-500 mt-4">
-              Update this with the current M-Changa total to keep the site in sync.
+              Update these amounts with the current balance in each account. Check your bank/M-Pesa statements regularly.
             </p>
           </form>
         )}

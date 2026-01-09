@@ -15,25 +15,20 @@ function App() {
   }, []);
 
   const fetchDonationData = async () => {
-    // Fetch verified donations
-    const { data: donationsData, error: donationsError } = await supabase
-      .from('donations')
-      .select('amount')
-      .eq('is_verified', true);
+    // Fetch all account amounts from settings
+    const { data: accountsData } = await supabase
+      .from('campaign_settings')
+      .select('key, value')
+      .in('key', ['mchanga_caryer', 'mchanga_carney', 'ncba_total', 'mpesa_total']);
 
-    if (!donationsError && donationsData) {
-      const directDonations = donationsData.reduce((sum, donation) => sum + Number(donation.amount), 0);
-      
-      // Fetch M-Changa amount from settings table
-      const { data: settingsData } = await supabase
-        .from('campaign_settings')
-        .select('value')
-        .eq('key', 'mchanga_amount')
-        .single();
-
-      const mchangaAmount = settingsData?.value ? Number(settingsData.value) : 0;
-      setTotalRaised(directDonations + mchangaAmount);
+    let total = 0;
+    if (accountsData) {
+      accountsData.forEach((item) => {
+        total += Number(item.value) || 0;
+      });
     }
+
+    setTotalRaised(total);
   };
 
   return (
