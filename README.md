@@ -32,7 +32,7 @@ This application helps automate the medical appeal process for the Caryer and Ca
 
 ```bash
 # Clone the repository
-git clone https://github.com/yourusername/caryer-medical-appeal.git
+git clone https://github.com/brandon-isaac/caryer-medical-appeal.git
 
 # Install dependencies
 npm install
