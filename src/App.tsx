@@ -2,13 +2,14 @@ import { useState, useEffect } from 'react';
 import { Hero } from './components/Hero';
 import { Stats } from './components/Stats';
 import { Story } from './components/Story';
-import { StatusWall } from './components/DonorWall';
+import { ContactDetails } from './components/DonorWall';
 import { Marquee } from './components/Marquee';
 import { AdminPanel } from './components/AdminPanel';
 import { supabase } from './lib/supabase';
 
 function App() {
-  const [totalRaised, setTotalRaised] = useState(0);
+  const [caryerAmount, setCaryerAmount] = useState(0);
+  const [carneyAmount, setCarneyAmount] = useState(0);
 
   useEffect(() => {
     fetchDonationData();
@@ -21,22 +22,33 @@ function App() {
       .select('key, value')
       .in('key', ['mchanga_caryer', 'mchanga_carney', 'ncba_total', 'mpesa_total']);
 
-    let total = 0;
+    let caryer = 0;
+    let carney = 0;
+    
     if (accountsData) {
       accountsData.forEach((item) => {
-        total += Number(item.value) || 0;
+        const amount = Number(item.value) || 0;
+        
+        if (item.key === 'mchanga_carney') {
+          // Carney's amount comes only from his M-Changa
+          carney += amount;
+        } else if (['mchanga_caryer', 'ncba_total', 'mpesa_total'].includes(item.key)) {
+          // Caryer's amount comes from his M-Changa, NCBA, and M-Pesa
+          caryer += amount;
+        }
       });
     }
 
-    setTotalRaised(total);
+    setCaryerAmount(caryer);
+    setCarneyAmount(carney);
   };
 
   return (
     <div className="min-h-screen bg-white pb-20"> {/* pb-20 prevents marquee overlap */}
       <Hero />
-      <Stats currentAmount={totalRaised} />
+      <Stats caryerAmount={caryerAmount} carneyAmount={carneyAmount} />
       <Story />
-      <StatusWall />
+      <ContactDetails />
       
       {/* Rest of your sections (Blog, Transparency Docs) */}
       

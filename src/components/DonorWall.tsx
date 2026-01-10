@@ -1,111 +1,44 @@
-import { useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
-import { Activity } from 'lucide-react';
-import { supabase } from '../lib/supabase';
+import { Mail, Phone } from 'lucide-react';
 
-interface HealthUpdate {
-  id: string;
-  child: 'caryer' | 'carney';
-  title: string;
-  description: string;
-  date: string;
-  created_at?: string;
-}
-
-export const StatusWall = () => {
-  const [healthUpdates, setHealthUpdates] = useState<HealthUpdate[]>([]);
-
-  useEffect(() => {
-    fetchHealthUpdates();
-    
-    // Refresh every 2 minutes
-    const interval = setInterval(fetchHealthUpdates, 2 * 60 * 1000);
-    return () => clearInterval(interval);
-  }, []);
-
-  const fetchHealthUpdates = async () => {
-    const { data, error } = await supabase
-      .from('health_updates')
-      .select('*')
-      .order('date', { ascending: false })
-      .limit(10);
-    
-    if (!error && data) {
-      setHealthUpdates(data);
-    }
-  };
-
-  const displayUpdates = healthUpdates;
-
-  const getChildName = (child: string) => {
-    switch (child) {
-      case 'caryer': return 'Caryer';
-      case 'carney': return 'Carney';
-      default: return 'Both';
-    }
-  };
-
-  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('en-US', { 
-      month: 'short', 
-      day: 'numeric',
-      year: 'numeric'
-    });
-  };
-
+export const ContactDetails = () => {
   return (
-    <div className="bg-medical-purple py-8 overflow-hidden">
-      <div className="max-w-7xl mx-auto px-6 mb-4">
-        <h3 className="text-white font-black text-xl flex items-center gap-2 italic uppercase">
-          <Activity size={24} />
-          Health Updates:
-        </h3>
-      </div>
-      
-      <div className="relative flex overflow-x-hidden">
-        <motion.div
-          animate={{ x: ["0%", "-100%"] }}
-          transition={{ 
-            ease: "linear", 
-            duration: 40, 
-            repeat: Infinity 
-          }}
-          className="flex whitespace-nowrap gap-8 items-center"
-        >
-          {displayUpdates.length === 0 ? (
-            <div className="flex items-center gap-3 bg-white/10 px-6 py-3 rounded-full border border-white/20 shadow-lg">
-              <div className="w-2 h-2 bg-coco-green rounded-full animate-pulse" />
-              <span className="text-white font-black tracking-tighter text-xl uppercase italic">
-                Updates coming soon...
-              </span>
+    <section className="bg-gradient-to-br from-coco-green/10 to-coco-blue/10 py-12 px-6">
+      <div className="max-w-4xl mx-auto bg-white p-8 lg:p-12 rounded-[2rem] shadow-xl border-b-8 border-coco-green">
+        <h2 className="text-3xl font-black text-center mb-8 uppercase text-gray-900">Contact Us</h2>
+        <p className="text-center text-gray-600 font-medium mb-8">
+          For any questions or more information, please reach out to the family
+        </p>
+        
+        <div className="grid md:grid-cols-2 gap-6">
+          {/* Phone Number */}
+          <div className="bg-gradient-to-br from-coco-blue/10 to-coco-blue/5 p-6 rounded-2xl border-2 border-coco-blue/20 hover:border-coco-blue transition">
+            <div className="flex items-center gap-3 mb-4">
+              <Phone className="text-coco-blue" size={28} />
+              <h3 className="font-black text-lg text-gray-900">Phone</h3>
             </div>
-          ) : (
-            displayUpdates.map((update, idx) => (
-              <div 
-                key={`${update.id}-${idx}`}
-                className={`flex items-center gap-3 bg-white/10 px-6 py-4 rounded-2xl border border-white/20 shadow-lg min-w-[400px]`}
-              >
-                <div className="flex flex-col gap-1">
-                  <div className="flex items-center gap-2 mb-1">
-                    <span className="text-white/70 font-bold text-xs uppercase">
-                      {getChildName(update.child)}
-                    </span>
-                    <span className="text-white/50 text-xs">
-                      • {formatDate(update.date)}
-                    </span>
-                  </div>
-                  <span className="text-white font-black tracking-tight text-lg">
-                    {update.title}
-                  </span>
-                  <span className="text-white/80 font-medium text-sm">
-                    {update.description}
-                  </span>
-                </div>
-              </div>
-            ))
-          )}
-        </motion.div>
+            <a 
+              href="tel:+254716228610" 
+              className="text-coco-blue hover:underline font-bold text-xl"
+            >
+              +254 716 228 610
+            </a>
+          </div>
+
+          {/* Email */}
+          <div className="bg-gradient-to-br from-coco-green/10 to-coco-green/5 p-6 rounded-2xl border-2 border-coco-green/20 hover:border-coco-green transition">
+            <div className="flex items-center gap-3 mb-4">
+              <Mail className="text-coco-green" size={28} />
+              <h3 className="font-black text-lg text-gray-900">Email</h3>
+            </div>
+            <a 
+              href="mailto:samokwanyo@gmail.com" 
+              className="text-coco-green hover:underline font-bold text-xl break-all"
+            >
+              samokwanyo@gmail.com
+            </a>
+          </div>
+        </div>
       </div>
-    </div>
+    </section>
   );
 };

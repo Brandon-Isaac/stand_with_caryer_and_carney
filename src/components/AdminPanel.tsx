@@ -1,15 +1,6 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '../lib/supabase';
-import { Lock, RefreshCw, CheckCircle, XCircle, Clock, Plus, FileText } from 'lucide-react';
-
-interface Donation {
-  id: string;
-  amount: number;
-  child: 'caryer' | 'carney';
-  is_verified: boolean;
-  created_at?: string;
-  notes?: string;
-}
+import { Lock, RefreshCw, FileText, XCircle, Plus } from 'lucide-react';
 
 interface HealthUpdate {
   id: string;
@@ -25,17 +16,13 @@ export const AdminPanel = () => {
   const [email, setEmail] = useState('');
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [showLoginForm, setShowLoginForm] = useState(false);
-  const [activeTab, setActiveTab] = useState<'accounts' | 'verify' | 'manual' | 'health'>('verify');
+  const [activeTab, setActiveTab] = useState<'accounts' | 'health'>('health');
   const [mchangaCaryerAmount, setMchangaCaryerAmount] = useState('');
   const [mchangaCarneyAmount, setMchangaCarneyAmount] = useState('');
   const [ncbaAmount, setNcbaAmount] = useState('');
   const [mpesaAmount, setMpesaAmount] = useState('');
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState('');
-  const [unverifiedDonations, setUnverifiedDonations] = useState<Donation[]>([]);
-  const [verifiedDonations, setVerifiedDonations] = useState<Donation[]>([]);
-  const [manualAmount, setManualAmount] = useState('');
-  const [manualChild, setManualChild] = useState<'caryer' | 'carney'>('caryer');
   const [healthUpdates, setHealthUpdates] = useState<HealthUpdate[]>([]);
   const [healthChild, setHealthChild] = useState<'caryer' | 'carney'>('caryer');
   const [healthTitle, setHealthTitle] = useState('');
@@ -55,33 +42,9 @@ export const AdminPanel = () => {
   useEffect(() => {
     if (isAuthenticated) {
       fetchAccountAmounts();
-      fetchDonations();
       fetchHealthUpdates();
     }
   }, [isAuthenticated]);
-
-  const fetchDonations = async () => {    
-    // Fetch unverified donations
-    const { data: unverified, error: unverifiedError } = await supabase
-      .from('donations')
-      .select('*')
-      .eq('is_verified', false)
-      .order('created_at', { ascending: false });
-
-    // Fetch recent verified donations
-    const { data: verified, error: verifiedError } = await supabase
-      .from('donations')
-      .select('*')
-      .eq('is_verified', true)
-      .order('created_at', { ascending: false })
-      .limit(10);
-    
-    if (unverifiedError) console.error('Error fetching unverified:', unverifiedError);
-    if (verifiedError) console.error('Error fetching verified:', verifiedError);
-
-    if (unverified) setUnverifiedDonations(unverified);
-    if (verified) setVerifiedDonations(verified);
-  };
 
   const fetchHealthUpdates = async () => {
     const { data, error } = await supabase
@@ -165,60 +128,6 @@ export const AdminPanel = () => {
       setMessage(`Error: ${error.message}`);
     } else {
       setMessage('Account balances updated successfully!');
-    }
-    setLoading(false);
-  };
-
-  const handleVerifyDonation = async (donationId: string) => {
-    const { error } = await supabase
-      .from('donations')
-      .update({ is_verified: true })
-      .eq('id', donationId);
-
-    if (!error) {
-      setMessage('Donation verified successfully!');
-      fetchDonations(); // Refresh the list
-    } else {
-      setMessage(`Error: ${error.message}`);
-    }
-  };
-
-  const handleRejectDonation = async (donationId: string) => {
-    const confirmDelete = window.confirm('Are you sure you want to delete this donation entry?');
-    if (!confirmDelete) return;
-
-    const { error } = await supabase
-      .from('donations')
-      .delete()
-      .eq('id', donationId);
-
-    if (!error) {
-      setMessage('Donation entry deleted.');
-      fetchDonations();
-    } else {
-      setMessage(`Error: ${error.message}`);
-    }
-  };
-
-  const handleAddManualDonation = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setLoading(true);
-    setMessage('');
-
-    const { error } = await supabase
-      .from('donations')
-      .insert([{ 
-        amount: parseFloat(manualAmount),
-        child: manualChild,
-        is_verified: false
-      }]);
-
-    if (error) {
-      setMessage(`Error: ${error.message}`);
-    } else {
-      setMessage('Manual donation added successfully!');
-      setManualAmount('');
-      fetchDonations();
     }
     setLoading(false);
   };
@@ -326,17 +235,6 @@ export const AdminPanel = () => {
       {/* Tabs */}
       <div className="flex border-b-2 border-gray-100">
         <button
-          onClick={() => setActiveTab('verify')}
-          className={`flex-1 py-3 px-4 font-bold text-sm transition ${
-            activeTab === 'verify'
-              ? 'bg-medical-purple text-white'
-              : 'bg-gray-50 text-gray-600 hover:bg-gray-100'
-          }`}
-        >
-          <Clock className="inline mr-2" size={16} />
-          Verify ({unverifiedDonations.length})
-        </button>
-        <button
           onClick={() => setActiveTab('health')}
           className={`flex-1 py-3 px-4 font-bold text-sm transition ${
             activeTab === 'health'
@@ -346,17 +244,6 @@ export const AdminPanel = () => {
         >
           <FileText className="inline mr-2" size={16} />
           Health Updates
-        </button>
-        <button
-          onClick={() => setActiveTab('manual')}
-          className={`flex-1 py-3 px-4 font-bold text-sm transition ${
-            activeTab === 'manual'
-              ? 'bg-medical-purple text-white'
-              : 'bg-gray-50 text-gray-600 hover:bg-gray-100'
-          }`}
-        >
-          <Plus className="inline mr-2" size={16} />
-          Add Entry
         </button>
         <button
           onClick={() => setActiveTab('accounts')}
@@ -372,134 +259,6 @@ export const AdminPanel = () => {
       </div>
 
       <div className="overflow-y-auto p-6 flex-1">
-        {/* Verification Tab */}
-        {activeTab === 'verify' && (
-          <div className="space-y-4">
-            <div className="flex justify-between items-center">
-              <h4 className="font-bold text-gray-700 text-sm uppercase">Pending Verification</h4>
-              <button
-                onClick={fetchDonations}
-                className="bg-gray-100 hover:bg-gray-200 text-gray-700 px-3 py-1 rounded-lg font-bold text-xs flex items-center gap-1"
-              >
-                <RefreshCw size={14} />
-                Refresh
-              </button>
-            </div>
-            {unverifiedDonations.length === 0 ? (
-              <div className="text-center py-8">
-                <p className="text-gray-500 text-sm mb-2">No pending donations</p>
-                <p className="text-xs text-gray-400">Check browser console (F12) for any errors</p>
-              </div>
-            ) : (
-              <div className="space-y-3">
-                {unverifiedDonations.map((donation) => (
-                  <div key={donation.id} className="bg-yellow-50 border-2 border-yellow-200 rounded-xl p-4">
-                    <div className="flex justify-between items-start mb-3">
-                      <div className="flex-1">
-                        <p className="text-sm text-gray-600 mb-1">
-                          <span className="font-black text-gray-900 text-lg">KES {donation.amount.toLocaleString()}</span>
-                        </p>
-                        <p className="text-sm text-gray-600">
-                          For: <span className="font-bold text-gray-900 uppercase">{donation.child}</span>
-                        </p>
-                        {donation.created_at && (
-                          <p className="text-xs text-gray-500 mt-1">
-                            {new Date(donation.created_at).toLocaleString()}
-                          </p>
-                        )}
-                      </div>
-                    </div>
-                    <div className="flex gap-2">
-                      <button
-                        onClick={() => handleVerifyDonation(donation.id)}
-                        className="flex-1 bg-green-500 text-white py-2 px-3 rounded-lg font-bold text-sm hover:bg-green-600 flex items-center justify-center gap-2"
-                      >
-                        <CheckCircle size={16} />
-                        Verify
-                      </button>
-                      <button
-                        onClick={() => handleRejectDonation(donation.id)}
-                        className="flex-1 bg-red-500 text-white py-2 px-3 rounded-lg font-bold text-sm hover:bg-red-600 flex items-center justify-center gap-2"
-                      >
-                        <XCircle size={16} />
-                        Delete
-                      </button>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            )}
-
-            <h4 className="font-bold text-gray-700 text-sm uppercase mt-6">Recent Verified</h4>
-            {verifiedDonations.length === 0 ? (
-              <p className="text-gray-500 text-sm text-center py-4">No verified donations yet</p>
-            ) : (
-              <div className="space-y-2">
-                {verifiedDonations.map((donation) => (
-                  <div key={donation.id} className="bg-green-50 border border-green-200 rounded-lg p-3">
-                    <div className="flex justify-between items-center">
-                      <div>
-                        <p className="font-bold text-gray-900 text-sm">KES {donation.amount.toLocaleString()}</p>
-                        <p className="text-xs text-gray-600">For: {donation.child.toUpperCase()}</p>
-                      </div>
-                      <CheckCircle className="text-green-500" size={20} />
-                    </div>
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
-        )}
-
-        {/* Manual Entry Tab */}
-        {activeTab === 'manual' && (
-          <form onSubmit={handleAddManualDonation} className="space-y-4">
-            <div className="bg-blue-50 border-2 border-blue-200 rounded-xl p-4">
-              <p className="text-sm text-blue-800 font-bold">
-                Use this when someone donated but forgot to record it in the app.
-              </p>
-            </div>
-            
-            <div>
-              <label className="text-sm font-bold text-gray-700">Amount (KES)</label>
-              <input
-                type="number"
-                placeholder="Enter amount"
-                value={manualAmount}
-                onChange={(e) => setManualAmount(e.target.value)}
-                className="w-full p-3 border-2 border-gray-200 rounded-lg mt-1 font-bold"
-                required
-                min="1"
-              />
-            </div>
-
-            <div>
-              <label className="text-sm font-bold text-gray-700">For Child</label>
-              <select
-                value={manualChild}
-                onChange={(e) => setManualChild(e.target.value as 'caryer' | 'carney')}
-                className="w-full p-3 border-2 border-gray-200 rounded-lg mt-1 font-bold"
-              >
-                <option value="caryer">CARYER</option>
-                <option value="carney">CARNEY</option>
-              </select>
-            </div>
-            
-            <button
-              type="submit"
-              disabled={loading}
-              className="w-full bg-medical-purple text-white py-3 rounded-lg font-bold flex items-center justify-center gap-2 hover:shadow-lg disabled:opacity-50"
-            >
-              <Plus size={16} />
-              {loading ? 'Adding...' : 'Add Donation Entry'}
-            </button>
-
-            <p className="text-xs text-gray-500">
-              This will create an unverified donation entry that you can then verify in the Verify tab.
-            </p>
-          </form>
-        )}
-
         {/* Health Updates Tab */}
         {activeTab === 'health' && (
           <div className="space-y-4">
