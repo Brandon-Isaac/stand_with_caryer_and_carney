@@ -21,13 +21,13 @@ export const Stats = ({ caryerAmount, carneyAmount }: StatsProps) => {
       <div className="max-w-6xl mx-auto bg-white p-8 lg:p-12 rounded-[2rem] shadow-xl border-b-8 border-coco-green">
         <div className="flex justify-between items-end mb-4">
           <div>
-            <p className="text-gray-500 font-bold uppercase tracking-wider text-sm">Raised So Far</p>
+            <p className="text-gray-900 font-bold uppercase tracking-wider text-xl">Raised So Far</p>
             <h2 className="text-[30px] font-black text-gray-900">
               KES {currentAmount.toLocaleString()}
             </h2>
           </div>
           <div className="text-right">
-            <p className="text-gray-500 font-bold uppercase tracking-wider text-sm">Target</p>
+            <p className="text-gray-900 font-bold uppercase tracking-wider text-xl">Target</p>
             <p className="text-[35px] font-black text-black">KES 12,000,000</p>
           </div>
         </div>
@@ -37,10 +37,10 @@ export const Stats = ({ caryerAmount, carneyAmount }: StatsProps) => {
           {/* Caryer Progress Bar */}
           <div>
             <div className="flex justify-between items-center mb-2">
-              <h3 className="font-black text-lg text-medical-purple">CARYER</h3>
+              <h3 className="font-black text-lg text-medical-purple">CARYER GENO</h3>
               <div className="text-right">
                 <p className="text-sm font-bold text-gray-800">
-                  KES {caryerAmount.toLocaleString()} <span className='text-[16px] font-bold text-gray-900' >/ 5,000,000</span>
+                  RAISED: KES {caryerAmount.toLocaleString()} <span className='text-[16px] font-bold text-gray-900' >| TARGET: 5,000,000</span>
                 </p>
               </div>
             </div>
@@ -60,10 +60,10 @@ export const Stats = ({ caryerAmount, carneyAmount }: StatsProps) => {
           {/* Carney Progress Bar */}
           <div>
             <div className="flex justify-between items-center mb-2">
-              <h3 className="font-black text-lg text-coco-blue">CARNEY</h3>
+              <h3 className="font-black text-lg text-coco-blue">CARNEY TEKO</h3>
               <div className="text-right">
                 <p className="text-sm font-bold text-gray-800">
-                  KES {carneyAmount.toLocaleString()} <span className='text-[16px] font-bold text-gray-900' >/ 7,000,000</span>
+                  RAISED: KES {carneyAmount.toLocaleString()} <span className='text-[16px] font-bold text-gray-900' >| TARGET: 7,000,000</span>
                 </p>
               </div>
             </div>
