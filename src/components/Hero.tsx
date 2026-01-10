@@ -26,7 +26,7 @@ export const Hero = () => {
             URGENT MEDICAL APPEAL!
             </div>
           <h1 className="text-5xl lg:text-4xl font-black text-gray-900 leading-tight mb-6">
-            Support <span className="text-medical-purple">Caryer Geno</span> & <span className="text-coco-blue">Carney Teko</span> for Sickle Cell disease Bone Marrow Transplants in India.
+            Support <span className="text-medical-purple">Caryer Geno</span> and <span className="text-coco-blue">Carney Teko</span> for Sickle Cell disease Bone Marrow Transplants in India.
           </h1>
           <p className="text-lg text-gray-600 mb-8 leading-relaxed">
             Our two brave little heroes are battling sickle cell disease. <strong>Caryer Kendric Geno Okwanyo</strong>, 
