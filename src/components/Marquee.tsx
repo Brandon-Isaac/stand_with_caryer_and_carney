@@ -39,48 +39,48 @@ export const Marquee = () => {
   };
 
   return (
-    <footer className="fixed bottom-0 w-full z-50 bg-white border-t-4 border-coco-melon py-4 shadow-[0_-10px_20px_rgba(0,0,0,0.05)]">
-      <div className="max-w-7xl mx-auto px-6 flex items-center justify-between gap-4">
+    <footer className="fixed bottom-0 w-full z-50 bg-white border-t-2 sm:border-t-4 border-coco-melon py-2 sm:py-3 lg:py-4 shadow-[0_-10px_20px_rgba(0,0,0,0.05)]">
+      <div className="max-w-7xl mx-auto px-3 sm:px-4 lg:px-6 flex items-center justify-between gap-2 sm:gap-3 lg:gap-4">
         {/* Previous Button */}
         <button
           onClick={handlePrevious}
-          className="bg-coco-melon/10 hover:bg-coco-melon/20 text-coco-melon p-2 rounded-full transition-colors flex-shrink-0"
+          className="bg-coco-melon/10 hover:bg-coco-melon/20 text-coco-melon p-1.5 sm:p-2 rounded-full transition-colors flex-shrink-0"
           aria-label="Previous quote"
         >
-          <ChevronLeft size={24} />
+          <ChevronLeft size={18} className="sm:w-5 sm:h-5 lg:w-6 lg:h-6" />
         </button>
 
         {/* Quote Display */}
-        <div className="flex-1 text-center">
-          <div className="flex items-center justify-center gap-3">
-            <span className="text-coco-melon font-black text-xl">✦</span>
-            <p className="text-gray-800 font-bold text-sm md:text-base uppercase tracking-wide">
+        <div className="flex-1 text-center overflow-hidden">
+          <div className="flex items-center justify-center gap-2 sm:gap-3">
+            <span className="text-coco-melon font-black text-base sm:text-lg lg:text-xl hidden sm:inline">✦</span>
+            <p className="text-gray-800 font-bold text-xs sm:text-sm lg:text-base uppercase tracking-wide line-clamp-2 sm:line-clamp-1">
               {AWARENESS_QUOTES[currentIndex]}
             </p>
-            <span className="text-coco-melon font-black text-xl">✦</span>
+            <span className="text-coco-melon font-black text-base sm:text-lg lg:text-xl hidden sm:inline">✦</span>
           </div>
         </div>
 
         {/* Next Button */}
         <button
           onClick={handleNext}
-          className="bg-coco-melon/10 hover:bg-coco-melon/20 text-coco-melon p-2 rounded-full transition-colors flex-shrink-0"
+          className="bg-coco-melon/10 hover:bg-coco-melon/20 text-coco-melon p-1.5 sm:p-2 rounded-full transition-colors flex-shrink-0"
           aria-label="Next quote"
         >
-          <ChevronRight size={24} />
+          <ChevronRight size={18} className="sm:w-5 sm:h-5 lg:w-6 lg:h-6" />
         </button>
       </div>
 
       {/* Quote Progress Indicators */}
-      <div className="flex justify-center gap-1.5 mt-3">
+      <div className="flex justify-center gap-1 sm:gap-1.5 mt-2 sm:mt-3 px-3">
         {AWARENESS_QUOTES.map((_, index) => (
           <button
             key={index}
             onClick={() => setCurrentIndex(index)}
-            className={`h-1.5 rounded-full transition-all ${
+            className={`h-1 sm:h-1.5 rounded-full transition-all ${
               index === currentIndex
-                ? 'w-8 bg-coco-melon'
-                : 'w-1.5 bg-gray-300 hover:bg-gray-400'
+                ? 'w-6 sm:w-8 bg-coco-melon'
+                : 'w-1 sm:w-1.5 bg-gray-300 hover:bg-gray-400'
             }`}
             aria-label={`Go to quote ${index + 1}`}
           />
