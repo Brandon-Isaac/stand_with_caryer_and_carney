@@ -42,7 +42,7 @@ export const Stats = ({ caryerAmount, carneyAmount }: StatsProps) => {
                 <p className="text-xs sm:text-sm font-bold text-gray-800">
                   RAISED: KES {caryerAmount.toLocaleString()}
                 </p>
-                <p className="text-xs sm:text-sm font-bold text-gray-900">TARGET: 5,000,000</p>
+                <p className="text-xs sm:text-sm font-bold text-gray-900">TARGET: KES 5,000,000</p>
               </div>
             </div>
             <div className="w-full h-6 sm:h-8 bg-gray-100 rounded-full overflow-hidden p-1 sm:p-1.5 shadow-inner">
@@ -66,7 +66,7 @@ export const Stats = ({ caryerAmount, carneyAmount }: StatsProps) => {
                 <p className="text-xs sm:text-sm font-bold text-gray-800">
                   RAISED: KES {carneyAmount.toLocaleString()}
                 </p>
-                <p className="text-xs sm:text-sm font-bold text-gray-900">TARGET: 7,000,000</p>
+                <p className="text-xs sm:text-sm font-bold text-gray-900">TARGET: KES 7,000,000</p>
               </div>
             </div>
             <div className="w-full h-6 sm:h-8 bg-gray-100 rounded-full overflow-hidden p-1 sm:p-1.5 shadow-inner">
