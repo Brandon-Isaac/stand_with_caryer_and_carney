@@ -29,14 +29,23 @@ export const Story = () => {
             
             <div className="prose prose-lg max-w-none mb-8">
               <p className="text-gray-700 leading-relaxed">
-                At just 10 months old, Caryer's life took an unexpected turn when he was diagnosed with sickle cell disease. 
-                Despite the pain and countless hospital visits, this brave 5-year-old has never lost his infectious smile. 
-                Caryer loves playing with his toy cars, watching Cars movies, and spending time with his baby brother Carney.
+                Meet our brave little hero, Caryer Kendric Geno Okwanyo, son of Samwel Okwanyo and Joyce Otieno. 
+                He was diagnosed with Sickle Cell Disease (SCD), a life-threatening blood disorder at just 10 months old. 
+                For the past five years, Caryer has courageously battled this condition. Despite the pain and frequent 
+                hospital visits, he continues to fight with remarkable strength, faith, and hope.
               </p>
               <p className="text-gray-700 leading-relaxed">
-                His condition requires frequent blood transfusions and pain management, but Caryer faces each day with 
-                remarkable courage. Now, he needs a Bone Marrow Transplant in India—a life-saving procedure that costs 
-                <strong className="text-medical-purple"> KES 5,000,000</strong>.
+                Due to recurrent painful crises and frequent infections, his medical team has recommended a Bone Marrow 
+                Transplant (BMT) in India, scheduled for March 2026, as a life-saving treatment. This procedure is both 
+                life-saving and life-changing, offering Caryer a real chance at healing and a healthier, pain-free future.
+              </p>
+              <p className="text-gray-700 leading-relaxed">
+                We humbly appeal for your support to help raise <strong className="text-medical-purple">KES 5 million</strong> to 
+                cover medical and travel expenses. No contribution is too small, your generosity can help save a life. 
+                Together, we can give Caryer the future every child deserves.
+              </p>
+              <p className="text-gray-700 leading-relaxed italic">
+                Thank you for your continued support, kindness, love, and prayers.
               </p>
             </div>
 
@@ -64,31 +73,40 @@ export const Story = () => {
               <Heart className="text-coco-blue" size={32} fill="currentColor" />
               <div>
                 <h3 className="text-3xl font-black text-gray-900">Carney Kian Teko Okwanyo</h3>
-                <p className="text-lg text-gray-600 font-bold">18 Months Old • Diagnosed at 4 Months</p>
+                <p className="text-lg text-gray-600 font-bold">20 Months Old • Diagnosed at 4 Months</p>
               </div>
             </div>
             
             <div className="prose prose-lg max-w-none mb-8">
               <p className="text-gray-700 leading-relaxed">
-                Little Carney's journey with sickle cell disease began even earlier—at just 4 months old. As the baby 
-                brother, he looks up to Caryer with admiration and follows him everywhere. Despite his young age, Carney 
-                has already endured more pain than most people face in a lifetime.
+                Meet our brave little hero, Carney Kian Teko Okwanyo, son of Samwel Okwanyo and Joyce Otieno. 
+                He was diagnosed with Sickle Cell Disease (SCD), a life-threatening blood disorder at just 4 months old. 
+                For the past 20 months, Carney has courageously battled this condition. Despite the pain and frequent 
+                hospital visits, he continues to fight with remarkable strength, faith, and hope.
               </p>
               <p className="text-gray-700 leading-relaxed">
-                Carney's condition is more severe, requiring even more intensive care and treatment. His bright eyes 
-                and precious giggles light up the room, reminding everyone why this fight is so important. His 
-                life-saving Bone Marrow Transplant will cost <strong className="text-coco-blue">KES 7,000,000</strong>.
+                Due to recurrent painful crises and frequent infections, his medical team has recommended a Bone Marrow 
+                Transplant (BMT) in India, scheduled for June 2026, as a life-saving treatment. This procedure is both 
+                life-saving and life-changing, offering Carney a real chance at healing and a healthier, pain-free future.
+              </p>
+              <p className="text-gray-700 leading-relaxed">
+                We humbly appeal for your support to help raise <strong className="text-coco-blue">KES 7 million</strong> to 
+                cover medical and travel expenses. No contribution is too small, your generosity can help save a life. 
+                Together, we can give Carney the future every child deserves.
+              </p>
+              <p className="text-gray-700 leading-relaxed italic">
+                Thank you for your continued support, kindness, love, and prayers.
               </p>
             </div>
 
             {/* Carney's Images */}
             <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
               <img src="/CarneyA.png" alt="Carney" className="rounded-2xl shadow-lg w-full h-48 object-cover border-4 border-coco-blue/20" />
-              <img src="/CarneyA.png" alt="Carney" className="rounded-2xl shadow-lg w-full h-48 object-cover border-4 border-coco-green/20" />
-              <img src="/CarneyA.png" alt="Carney" className="rounded-2xl shadow-lg w-full h-48 object-cover border-4 border-medical-purple/20" />
-              <img src="/CarneyA.png" alt="Carney" className="rounded-2xl shadow-lg w-full h-48 object-cover border-4 border-coco-blue/20" />
-              <img src="/CarneyA.png" alt="Carney" className="rounded-2xl shadow-lg w-full h-48 object-cover border-4 border-coco-green/20" />
-              <img src="/CarneyA.png" alt="Carney" className="rounded-2xl shadow-lg w-full h-48 object-cover border-4 border-medical-purple/20" />
+              <img src="/CarneyB.png" alt="Carney" className="rounded-2xl shadow-lg w-full h-48 object-cover border-4 border-coco-green/20" />
+              <img src="/CarneyC.png" alt="Carney" className="rounded-2xl shadow-lg w-full h-48 object-cover border-4 border-medical-purple/20" />
+              <img src="/CarneyD.png" alt="Carney" className="rounded-2xl shadow-lg w-full h-48 object-cover border-4 border-coco-blue/20" />
+              <img src="/CarneyE.png" alt="Carney" className="rounded-2xl shadow-lg w-full h-48 object-cover border-4 border-coco-green/20" />
+              <img src="/CarneyF.png" alt="Carney" className="rounded-2xl shadow-lg w-full h-48 object-cover border-4 border-medical-purple/20" />
             </div>
           </div>
           
@@ -102,16 +120,17 @@ export const Story = () => {
         <div className="bg-gradient-to-r from-medical-purple to-coco-blue rounded-3xl shadow-2xl p-8 lg:p-12 text-white text-center">
           <h3 className="text-3xl font-black mb-4">Together, We Can Save Two Lives</h3>
           <p className="text-xl mb-6 leading-relaxed opacity-90">
-            Both brothers are scheduled for their life-saving Bone Marrow Transplants in India in March 2026. 
-            The total cost is <span className="font-black text-2xl">KES 12,000,000</span>—but with your help, 
-            we can give Caryer and Carney the future they deserve.
+            Both brothers are scheduled for their life-saving Bone Marrow Transplants in India. Caryer's procedure 
+            is scheduled for March 2026, while Carney's will follow in June 2026. The total cost is 
+            <span className="font-black text-2xl"> KES 12,000,000</span>—but with your help, we can give Caryer and 
+            Carney the future they deserve.
           </p>
           <div className="flex flex-wrap justify-center gap-4 text-lg">
             <div className="bg-white/20 backdrop-blur-sm px-6 py-3 rounded-full font-bold">
               Treatment in India
             </div>
             <div className="bg-white/20 backdrop-blur-sm px-6 py-3 rounded-full font-bold">
-              March 2026
+              March & June 2026
             </div>
             <div className="bg-white/20 backdrop-blur-sm px-6 py-3 rounded-full font-bold">
               Two Brothers, One Fight

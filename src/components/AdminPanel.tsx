@@ -21,6 +21,10 @@ export const AdminPanel = () => {
   const [mchangaCarneyAmount, setMchangaCarneyAmount] = useState('');
   const [ncbaAmount, setNcbaAmount] = useState('');
   const [mpesaAmount, setMpesaAmount] = useState('');
+  const [gofundmeCaryerAmount, setGofundmeCaryerAmount] = useState('');
+  const [gofundmeCarneyAmount, setGofundmeCarneyAmount] = useState('');
+  const [givesendgoCaryerAmount, setGivesendgoCaryerAmount] = useState('');
+  const [givesendgoCarneyAmount, setGivesendgoCarneyAmount] = useState('');
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState('');
   const [healthUpdates, setHealthUpdates] = useState<HealthUpdate[]>([]);
@@ -64,7 +68,7 @@ export const AdminPanel = () => {
     const { data } = await supabase
       .from('campaign_settings')
       .select('key, value')
-      .in('key', ['mchanga_caryer', 'mchanga_carney', 'ncba_total', 'mpesa_total']);
+      .in('key', ['mchanga_caryer', 'mchanga_carney', 'ncba_total', 'mpesa_total', 'gofundme_caryer', 'gofundme_carney', 'givesendgo_caryer', 'givesendgo_carney']);
 
     if (data) {
       data.forEach((item) => {
@@ -72,6 +76,10 @@ export const AdminPanel = () => {
         if (item.key === 'mchanga_carney') setMchangaCarneyAmount(item.value || '0');
         if (item.key === 'ncba_total') setNcbaAmount(item.value || '0');
         if (item.key === 'mpesa_total') setMpesaAmount(item.value || '0');
+        if (item.key === 'gofundme_caryer') setGofundmeCaryerAmount(item.value || '0');
+        if (item.key === 'gofundme_carney') setGofundmeCarneyAmount(item.value || '0');
+        if (item.key === 'givesendgo_caryer') setGivesendgoCaryerAmount(item.value || '0');
+        if (item.key === 'givesendgo_carney') setGivesendgoCarneyAmount(item.value || '0');
       });
     }
   };
@@ -117,7 +125,11 @@ export const AdminPanel = () => {
       { key: 'mchanga_caryer', value: mchangaCaryerAmount || '0' },
       { key: 'mchanga_carney', value: mchangaCarneyAmount || '0' },
       { key: 'ncba_total', value: ncbaAmount || '0' },
-      { key: 'mpesa_total', value: mpesaAmount || '0' }
+      { key: 'mpesa_total', value: mpesaAmount || '0' },
+      { key: 'gofundme_caryer', value: gofundmeCaryerAmount || '0' },
+      { key: 'gofundme_carney', value: gofundmeCarneyAmount || '0' },
+      { key: 'givesendgo_caryer', value: givesendgoCaryerAmount || '0' },
+      { key: 'givesendgo_carney', value: givesendgoCarneyAmount || '0' }
     ];
 
     const { error } = await supabase
@@ -427,6 +439,54 @@ export const AdminPanel = () => {
               />
             </div>
 
+            <div>
+              <label className="text-sm font-bold text-gray-700">GoFundMe - Caryer (KES)</label>
+              <input
+                type="number"
+                placeholder="0"
+                value={gofundmeCaryerAmount}
+                onChange={(e) => setGofundmeCaryerAmount(e.target.value)}
+                className="w-full p-3 border-2 border-gray-200 rounded-lg mt-1 font-bold"
+                min="0"
+              />
+            </div>
+
+            <div>
+              <label className="text-sm font-bold text-gray-700">GoFundMe - Carney (KES)</label>
+              <input
+                type="number"
+                placeholder="0"
+                value={gofundmeCarneyAmount}
+                onChange={(e) => setGofundmeCarneyAmount(e.target.value)}
+                className="w-full p-3 border-2 border-gray-200 rounded-lg mt-1 font-bold"
+                min="0"
+              />
+            </div>
+
+            <div>
+              <label className="text-sm font-bold text-gray-700">GiveSendGo - Caryer (KES)</label>
+              <input
+                type="number"
+                placeholder="0"
+                value={givesendgoCaryerAmount}
+                onChange={(e) => setGivesendgoCaryerAmount(e.target.value)}
+                className="w-full p-3 border-2 border-gray-200 rounded-lg mt-1 font-bold"
+                min="0"
+              />
+            </div>
+
+            <div>
+              <label className="text-sm font-bold text-gray-700">GiveSendGo - Carney (KES)</label>
+              <input
+                type="number"
+                placeholder="0"
+                value={givesendgoCarneyAmount}
+                onChange={(e) => setGivesendgoCarneyAmount(e.target.value)}
+                className="w-full p-3 border-2 border-gray-200 rounded-lg mt-1 font-bold"
+                min="0"
+              />
+            </div>
+
             <div className="bg-gray-50 border-2 border-gray-200 rounded-xl p-4">
               <p className="text-sm font-bold text-gray-600">Total (All Accounts)</p>
               <p className="text-2xl font-black text-gray-900">
@@ -434,7 +494,11 @@ export const AdminPanel = () => {
                   (parseFloat(mchangaCaryerAmount) || 0) +
                   (parseFloat(mchangaCarneyAmount) || 0) +
                   (parseFloat(ncbaAmount) || 0) +
-                  (parseFloat(mpesaAmount) || 0)
+                  (parseFloat(mpesaAmount) || 0) +
+                  (parseFloat(gofundmeCaryerAmount) || 0) +
+                  (parseFloat(gofundmeCarneyAmount) || 0) +
+                  (parseFloat(givesendgoCaryerAmount) || 0) +
+                  (parseFloat(givesendgoCarneyAmount) || 0)
                 ).toLocaleString()}
               </p>
             </div>
