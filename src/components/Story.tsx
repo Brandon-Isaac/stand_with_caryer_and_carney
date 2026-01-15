@@ -29,18 +29,18 @@ export const Story = () => {
             
             <div className="prose prose-lg max-w-none mb-8">
               <p className="text-gray-700 leading-relaxed">
-                Meet our brave little hero, <strong className="text-medical-purple">Caryer Kendric Geno Okwanyo</strong>, son of Samwel Okwanyo and Joyce Otieno. 
-                He was diagnosed with <strong className="text-medical-purple">Sickle Cell Disease (SCD)</strong>, a life-threatening blood disorder at just 10 months old. 
+                Meet our brave little hero, <strong>Caryer Kendric Geno Okwanyo</strong>, son of Samwel Okwanyo and Joyce Otieno. 
+                He was diagnosed with <strong>Sickle Cell Disease (SCD)</strong>, a life-threatening blood disorder at just 10 months old. 
                 For the past five years, Caryer has courageously battled this condition. Despite the pain and frequent 
                 hospital visits, he continues to fight with remarkable strength, faith, and hope.
               </p>
               <p className="text-gray-700 leading-relaxed">
-                Due to recurrent painful crises and frequent infections, his medical team has recommended a <strong className="text-medical-purple">Bone Marrow 
-                Transplant (BMT) in India</strong>, scheduled for <strong className="text-medical-purple">March 2026</strong>, as a life-saving treatment. This procedure is both 
+                Due to recurrent painful crises and frequent infections, his medical team has recommended a <strong>Bone Marrow 
+                Transplant (BMT) in India</strong>, scheduled for <strong>March 2026</strong>, as a life-saving treatment. This procedure is both 
                 life-saving and life-changing, offering Caryer a real chance at healing and a healthier, pain-free future.
               </p>
               <p className="text-gray-700 leading-relaxed">
-                We humbly appeal for your support to help raise <strong className="text-medical-purple">KES 5 million</strong> to 
+                We humbly appeal for your support to help raise <strong>KES 5 million</strong> to 
                 cover medical and travel expenses. No contribution is too small, your generosity can help save a life. 
                 Together, we can give Caryer the future every child deserves.
               </p>
@@ -79,18 +79,18 @@ export const Story = () => {
             
             <div className="prose prose-lg max-w-none mb-8">
               <p className="text-gray-700 leading-relaxed">
-                Meet our brave little hero, <strong className="text-coco-blue">Carney Kian Teko Okwanyo</strong>, son of Samwel Okwanyo and Joyce Otieno. 
-                He was diagnosed with <strong className="text-coco-blue">Sickle Cell Disease (SCD)</strong>, a life-threatening blood disorder at just 4 months old. 
+                Meet our brave little hero, <strong>Carney Kian Teko Okwanyo</strong>, son of Samwel Okwanyo and Joyce Otieno. 
+                He was diagnosed with <strong>Sickle Cell Disease (SCD)</strong>, a life-threatening blood disorder at just 4 months old. 
                 For the past 20 months, Carney has courageously battled this condition. Despite the pain and frequent 
                 hospital visits, he continues to fight with remarkable strength, faith, and hope.
               </p>
               <p className="text-gray-700 leading-relaxed">
-                Due to recurrent painful crises and frequent infections, his medical team has recommended a <strong className="text-coco-blue">Bone Marrow 
-                Transplant (BMT) in India</strong>, scheduled for <strong className="text-coco-blue">March 2026</strong>, as a life-saving treatment. This procedure is both 
+                Due to recurrent painful crises and frequent infections, his medical team has recommended a <strong>Bone Marrow 
+                Transplant (BMT) in India</strong>, scheduled for <strong>March 2026</strong>, as a life-saving treatment. This procedure is both 
                 life-saving and life-changing, offering Carney a real chance at healing and a healthier, pain-free future.
               </p>
               <p className="text-gray-700 leading-relaxed">
-                We humbly appeal for your support to help raise <strong className="text-coco-blue">KES 7 million</strong> to 
+                We humbly appeal for your support to help raise <strong>KES 7 million</strong> to 
                 cover medical and travel expenses. No contribution is too small, your generosity can help save a life. 
                 Together, we can give Carney the future every child deserves.
               </p>
