@@ -29,14 +29,14 @@ export const Story = () => {
             
             <div className="prose prose-lg max-w-none mb-8">
               <p className="text-gray-700 leading-relaxed">
-                Meet our brave little hero, Caryer Kendric Geno Okwanyo, son of Samwel Okwanyo and Joyce Otieno. 
-                He was diagnosed with Sickle Cell Disease (SCD), a life-threatening blood disorder at just 10 months old. 
+                Meet our brave little hero, <strong className="text-medical-purple">Caryer Kendric Geno Okwanyo</strong>, son of Samwel Okwanyo and Joyce Otieno. 
+                He was diagnosed with <strong className="text-medical-purple">Sickle Cell Disease (SCD)</strong>, a life-threatening blood disorder at just 10 months old. 
                 For the past five years, Caryer has courageously battled this condition. Despite the pain and frequent 
                 hospital visits, he continues to fight with remarkable strength, faith, and hope.
               </p>
               <p className="text-gray-700 leading-relaxed">
-                Due to recurrent painful crises and frequent infections, his medical team has recommended a Bone Marrow 
-                Transplant (BMT) in India, scheduled for March 2026, as a life-saving treatment. This procedure is both 
+                Due to recurrent painful crises and frequent infections, his medical team has recommended a <strong className="text-medical-purple">Bone Marrow 
+                Transplant (BMT) in India</strong>, scheduled for <strong className="text-medical-purple">March 2026</strong>, as a life-saving treatment. This procedure is both 
                 life-saving and life-changing, offering Caryer a real chance at healing and a healthier, pain-free future.
               </p>
               <p className="text-gray-700 leading-relaxed">
@@ -79,14 +79,14 @@ export const Story = () => {
             
             <div className="prose prose-lg max-w-none mb-8">
               <p className="text-gray-700 leading-relaxed">
-                Meet our brave little hero, Carney Kian Teko Okwanyo, son of Samwel Okwanyo and Joyce Otieno. 
-                He was diagnosed with Sickle Cell Disease (SCD), a life-threatening blood disorder at just 4 months old. 
+                Meet our brave little hero, <strong className="text-coco-blue">Carney Kian Teko Okwanyo</strong>, son of Samwel Okwanyo and Joyce Otieno. 
+                He was diagnosed with <strong className="text-coco-blue">Sickle Cell Disease (SCD)</strong>, a life-threatening blood disorder at just 4 months old. 
                 For the past 20 months, Carney has courageously battled this condition. Despite the pain and frequent 
                 hospital visits, he continues to fight with remarkable strength, faith, and hope.
               </p>
               <p className="text-gray-700 leading-relaxed">
-                Due to recurrent painful crises and frequent infections, his medical team has recommended a Bone Marrow 
-                Transplant (BMT) in India, scheduled for June 2026, as a life-saving treatment. This procedure is both 
+                Due to recurrent painful crises and frequent infections, his medical team has recommended a <strong className="text-coco-blue">Bone Marrow 
+                Transplant (BMT) in India</strong>, scheduled for <strong className="text-coco-blue">March 2026</strong>, as a life-saving treatment. This procedure is both 
                 life-saving and life-changing, offering Carney a real chance at healing and a healthier, pain-free future.
               </p>
               <p className="text-gray-700 leading-relaxed">
@@ -121,7 +121,7 @@ export const Story = () => {
           <h3 className="text-3xl font-black mb-4">Together, We Can Save Two Lives</h3>
           <p className="text-xl mb-6 leading-relaxed opacity-90">
             Both brothers are scheduled for their life-saving Bone Marrow Transplants in India. Caryer's procedure 
-            is scheduled for March 2026, while Carney's will follow in June 2026. The total cost is 
+            is scheduled for March 2026, while Carney's will follow in March 2026. The total cost is 
             <span className="font-black text-2xl"> KES 12,000,000</span>—but with your help, we can give Caryer and 
             Carney the future they deserve.
           </p>
@@ -130,7 +130,7 @@ export const Story = () => {
               Treatment in India
             </div>
             <div className="bg-white/20 backdrop-blur-sm px-6 py-3 rounded-full font-bold">
-              March & June 2026
+              March 2026
             </div>
             <div className="bg-white/20 backdrop-blur-sm px-6 py-3 rounded-full font-bold">
               Two Brothers, One Fight
